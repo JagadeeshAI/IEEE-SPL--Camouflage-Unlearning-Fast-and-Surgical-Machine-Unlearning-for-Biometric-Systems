@@ -1,9 +1,9 @@
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=1\textwidth]{images/Cam-Page-5.drawio.png}
-    \caption{Overview of Camouflage Unlearning. Traditional methods collapse all forget classes to a single distant point, requiring long migration paths. CU instead hides each forget class within its nearest retain class boundary, reducing migration distance and accelerating convergence.}
-    \label{fig:method}
-\end{figure*}
+% \begin{figure*}[t]
+%     \centering
+%     \includegraphics[width=1\textwidth]{images/Cam-Page-5.drawio.png}
+%     \caption{Overview of Camouflage Unlearning. Traditional methods collapse all forget classes to a single distant point, requiring long migration paths. CU instead hides each forget class within its nearest retain class boundary, reducing migration distance and accelerating convergence.}
+%     \label{fig:method}
+% \end{figure*}
 
 \section{Problem Setting and Methodology}
 \label{sec:4}
@@ -31,7 +31,7 @@ where $C$ is the number of classes and Oracle denotes a model trained directly o
 
 \subsection{Camouflage Unlearning}
 \label{4.2}
-CU relocates forget-class embeddings to retain-class boundaries via direct centroid mapping. Unlike existing many-to-one approaches that collapse all forget classes to a single distant point, CU implements many-to-many distribution (Figure~\ref{fig:method}), reducing migration distance and accelerating convergence.
+CU relocates forget-class embeddings to retain-class boundaries via direct centroid mapping. Unlike existing many-to-one approaches that collapse all forget classes to a single distant point, CU implements many-to-many distribution, reducing migration distance and accelerating convergence.
 
 We compute class centroids by averaging embeddings, $c_k = \frac{1}{|D_k|}\sum_{x \in D_k} \textit{emb}(x)$, yielding retain centroids $\{c_{r_1}, \dots, c_{r_K}\}$ and forget centroids $\{c_{f_1}, \dots, c_{f_M}\}$, where $K$ and $M$ are the numbers of retain and forget classes. Each forget centroid $c_{f_i}$ is assigned its nearest retain centroid as target:
 \begin{equation}
@@ -58,32 +58,32 @@ where $\theta_g$ represents parameters in block $g$ and $G$ is the total number 
 \mathcal{L}_{\textit{total}} = \mathcal{L}_{\textit{f}} + \lambda_{\textit{dom}} \mathcal{L}_{\textit{dom}} + \mathcal{L}_{\textit{ret}} + \mathcal{L}_{\textit{local}}
 \end{equation}
 
-\subsection{Algorithmic Preview}
-Algorithm~\ref{alg:cu} summarizes the complete procedure: computing class centroids, assigning each forget class to its nearest retain centroid as a target, and iteratively updating the model using the combined forget, dominance, and retain losses.
-
-\begin{algorithm}[htbp]
-\caption{Camouflage Unlearning}
-\label{alg:cu}
-\begin{algorithmic}[1]
-\Require Pre-trained model $\mathcal{M}$, forget data $D_f$, retain data $D_r$, margin $\gamma$, hyperparameters $\lambda_{\text{dom}}, \lambda_{\text{ce}}, \lambda_{\text{emb}}, \lambda_{\text{local}}$, epochs $E$
-\Ensure Unlearned model $\mathcal{M}'$
-\For{each class $k$ in $D_r \cup D_f$}
-    \State $c_k \gets \tfrac{1}{|D_k|}\textstyle\sum_{x \in D_k} \operatorname{emb}(x)$
-\EndFor
-\For{each forget class $i$ with centroid $c_{f_i}$}
-    \State $j^* \gets \arg\min_j \|c_{f_i} - c_{r_j}\|_2$; \; $\mathbf{t}_i \gets c_{r_{j^*}}$ \Comment{Eq.~2}
-\EndFor
-\For{epoch $= 1$ to $E$}
-    \For{each mini-batch from $D_f, D_r$}
-        \State $\mathcal{L}_f \gets \tfrac{1}{|D_f|}\textstyle\sum_{(\mathbf{x},y) \in D_f} \|\operatorname{emb}(\mathbf{x}) - \mathbf{t}_y\|^2$ \Comment{Eq.~3}
-        \State $\mathcal{L}_{\text{dom}} \gets \operatorname{ReLU}\bigl(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\bigr)$ \Comment{Eq.~4}
-        \State $\mathcal{L}_{\text{ret}} \gets \lambda_{\text{ce}} \cdot \operatorname{CE}(\mathbf{z}_r, y_r)$
-        \Statex \hspace{3.2em} $+ \; \lambda_{\text{emb}} \cdot \tfrac{1}{|D_r|}\textstyle\sum_{(\mathbf{x},y) \in D_r} \|\operatorname{emb}(\mathbf{x}) - c_y\|^2$ \Comment{Eq.~5}
-        \State $\mathcal{L}_{\text{local}} \gets \lambda_{\text{local}} \textstyle\sum_{g=1}^{G} \|\theta_g \|_2$ \Comment{Eq.~6}
-        \State $\mathcal{L}_{\text{total}} \gets \mathcal{L}_f + \lambda_{\text{dom}} \mathcal{L}_{\text{dom}} + \mathcal{L}_{\text{ret}} + \mathcal{L}_{\text{local}}$ \Comment{Eq.~7}
-        \State Update $\mathcal{M}$ via $\nabla_\theta \mathcal{L}_{\text{total}}$
-    \EndFor
-\EndFor
-\State \Return $\mathcal{M}'$
-\end{algorithmic}
-\end{algorithm}
+% \subsection{Algorithmic Preview}
+% Algorithm~\ref{alg:cu} summarizes the complete procedure: computing class centroids, assigning each forget class to its nearest retain centroid as a target, and iteratively updating the model using the combined forget, dominance, and retain losses.
+%
+% \begin{algorithm}[htbp]
+% \caption{Camouflage Unlearning}
+% \label{alg:cu}
+% \begin{algorithmic}[1]
+% \Require Pre-trained model $\mathcal{M}$, forget data $D_f$, retain data $D_r$, margin $\gamma$, hyperparameters $\lambda_{\text{dom}}, \lambda_{\text{ce}}, \lambda_{\text{emb}}, \lambda_{\text{local}}$, epochs $E$
+% \Ensure Unlearned model $\mathcal{M}'$
+% \For{each class $k$ in $D_r \cup D_f$}
+%     \State $c_k \gets \tfrac{1}{|D_k|}\textstyle\sum_{x \in D_k} \operatorname{emb}(x)$
+% \EndFor
+% \For{each forget class $i$ with centroid $c_{f_i}$}
+%     \State $j^* \gets \arg\min_j \|c_{f_i} - c_{r_j}\|_2$; \; $\mathbf{t}_i \gets c_{r_{j^*}}$ \Comment{Eq.~2}
+% \EndFor
+% \For{epoch $= 1$ to $E$}
+%     \For{each mini-batch from $D_f, D_r$}
+%         \State $\mathcal{L}_f \gets \tfrac{1}{|D_f|}\textstyle\sum_{(\mathbf{x},y) \in D_f} \|\operatorname{emb}(\mathbf{x}) - \mathbf{t}_y\|^2$ \Comment{Eq.~3}
+%         \State $\mathcal{L}_{\text{dom}} \gets \operatorname{ReLU}\bigl(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\bigr)$ \Comment{Eq.~4}
+%         \State $\mathcal{L}_{\text{ret}} \gets \lambda_{\text{ce}} \cdot \operatorname{CE}(\mathbf{z}_r, y_r)$
+%         \Statex \hspace{3.2em} $+ \; \lambda_{\text{emb}} \cdot \tfrac{1}{|D_r|}\textstyle\sum_{(\mathbf{x},y) \in D_r} \|\operatorname{emb}(\mathbf{x}) - c_y\|^2$ \Comment{Eq.~5}
+%         \State $\mathcal{L}_{\text{local}} \gets \lambda_{\text{local}} \textstyle\sum_{g=1}^{G} \|\theta_g \|_2$ \Comment{Eq.~6}
+%         \State $\mathcal{L}_{\text{total}} \gets \mathcal{L}_f + \lambda_{\text{dom}} \mathcal{L}_{\text{dom}} + \mathcal{L}_{\text{ret}} + \mathcal{L}_{\text{local}}$ \Comment{Eq.~7}
+%         \State Update $\mathcal{M}$ via $\nabla_\theta \mathcal{L}_{\text{total}}$
+%     \EndFor
+% \EndFor
+% \State \Return $\mathcal{M}'$
+% \end{algorithmic}
+% \end{algorithm}

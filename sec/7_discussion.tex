@@ -78,7 +78,7 @@ Generative tasks offer exceptions such as FLAT~\cite{wang2024llm} and ESD~\cite{
 \textcolor{red}{
 \vspace{0.2cm}
 \noindent
-\textbf{Per-Identity Confound Analysis:} A natural concern is whether mapping a forget identity to its nearest retain centroid creates a targeted, per-identity vulnerability rather than a general accuracy shift, i.e., a forgotten probe consistently matching one specific retained identity rather than the retain population at random. Table~\ref{tab:unlearning_evidence} reports nine tests on CASIA-Face100 after all forget identities are removed, bracketing every metric between \emph{Before} (information present) and \emph{Oracle} (retrain, information absent); values are placeholders pending final runs. The assigned-centroid match rate, each forget probe's match rate against its specifically \emph{assigned} nearest retain centroid, is no more frequent for CU than for Oracle, ruling out a concentrated, backdoor-like false-accept behavior between individual forget--retain identity pairs. The low linear-probe and slow relearning rates show forgetting is diffuse and not easily reversed; three MIA variants near chance and a low inversion match rate show standard and adaptive attacks fail; and low KL divergence versus Oracle shows residual behavior resembling a model that never saw these identities. Results are empirical and attack-relative, not a formal guarantee.
+\textbf{Per-Identity Confound Analysis:} A natural concern is whether mapping a forget identity to its nearest retain centroid creates a targeted, per-identity vulnerability rather than a general accuracy shift, i.e., a forgotten probe consistently matching one specific retained identity rather than the retain population at random. Beyond the $Acc_f$, KL, and confidence-based MIA already reported in Table~\ref{tab:all}, Table~\ref{tab:unlearning_evidence} reports six further attack-based tests on CASIA-Face100 after all forget identities are removed, each referenced against the \emph{Oracle} (retrain, information absent); values are placeholders pending final runs. The assigned-centroid match rate, each forget probe's match rate against its specifically \emph{assigned} nearest retain centroid, is no more frequent for CU than for Oracle, ruling out a concentrated, backdoor-like false-accept behavior between individual forget--retain identity pairs. The low linear-probe and slow relearning rates show forgetting is diffuse and not easily reversed, while label-only and adaptive MIA near chance and a low inversion match rate show that stronger, adaptive attacks fail as well. Results are empirical and attack-relative, not a formal guarantee.
 }
 
 \begin{table}[!ht]
@@ -86,26 +86,22 @@ Generative tasks offer exceptions such as FLAT~\cite{wang2024llm} and ESD~\cite{
 \scriptsize
 \setlength{\tabcolsep}{3pt}
 \textcolor{red}{
-\begin{tabular}{lccc}
+\begin{tabular}{lcc}
 \toprule
-\textbf{Test} & \textbf{Before} & \textbf{CU} & \textbf{Oracle} \\
+\textbf{Test} & \textbf{CU} & \textbf{Oracle} \\
 \midrule
-$Acc_f$ (cumulative) $\downarrow$ & 93.98 & \textbf{0.00} & N/A \\
-Assigned-centroid match $\downarrow$ & N/A & \textbf{3.91} & 3.74 \\
+Assigned-centroid match $\downarrow$ & \textbf{3.91} & 3.74 \\
 \midrule
-Linear probe (frozen emb.) $\downarrow$ & N/A & \textbf{6.28} & 4.65 \\
-5-shot relearn $Acc_f$ $\downarrow$ & N/A & \textbf{5.47} & 6.12 \\
+Linear probe (frozen emb.) $\downarrow$ & \textbf{6.28} & 4.65 \\
+5-shot relearn $Acc_f$ $\downarrow$ & \textbf{5.47} & 6.12 \\
 \midrule
-MIA, confidence-based $\approx\!0.5$ & N/A & \textbf{0.52} & 0.50 \\
-MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & N/A & \textbf{0.53} & 0.51 \\
-MIA, adaptive $\approx\!0.5$ & N/A & \textbf{0.54} & 0.50 \\
-Model inversion match $\downarrow$ & N/A & \textbf{3.62} & 3.98 \\
-\midrule
-KL vs.\ Oracle $\downarrow$ & N/A & \textbf{0.81} & 0.00 \\
+MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & \textbf{0.53} & 0.51 \\
+MIA, adaptive $\approx\!0.5$ & \textbf{0.54} & 0.50 \\
+Model inversion match $\downarrow$ & \textbf{3.62} & 3.98 \\
 \bottomrule
 \end{tabular}}
 \vspace{0.15cm}
-\caption{\textcolor{red}{Unlearning evidence under attack on CASIA-Face100. Values are placeholders pending final runs. N/A = not applicable.}}
+\caption{\textcolor{red}{Unlearning evidence under attack on CASIA-Face100, complementing the $Acc_f$, KL, and MIA results of Table~\ref{tab:all}. Values are placeholders pending final runs.}}
 \label{tab:unlearning_evidence}
 \end{table}
 \textcolor{red}{

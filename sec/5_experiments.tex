@@ -8,7 +8,9 @@
 
 \vspace{0.2cm}
 \noindent
-\textbf{Evaluation Metrics:} We evaluate forget accuracy $Acc_f$, retain accuracy $Acc_r$, membership inference attack success (MIA), KL divergence, and runtime efficiency (RTE), measured in seconds. Following Shibata \textit{et al.}~\cite{shibata2021learning}, we use H-mean as $H\text{-}Mean = \frac{2 \cdot Acc_r \cdot (1 - Acc_f)}{Acc_r + (1 - Acc_f)}$. Successful unlearning requires $Acc_f \approx 0$, MIA $\approx 0.5$ indicates near-random membership inference, low KL divergence and RTE, with $Acc_r$ near oracle performance.
+\textbf{Evaluation Metrics:} We evaluate forget accuracy $Acc_f$, retain accuracy $Acc_r$, membership inference attack success (MIA), KL divergence, and runtime efficiency (RTE), measured in seconds. Following Shibata \textit{et al.}~\cite{shibata2021learning}, we use H-mean as $H\text{-}Mean = \frac{2 \cdot Acc_r \cdot (1 - Acc_f)}{Acc_r + (1 - Acc_f)}$. Successful unlearning requires $Acc_f \approx 0$, MIA $\approx 0.5$ indicates near-random membership inference, low KL divergence and RTE, with $Acc_r$ near oracle performance. \textcolor{red}{MIA follows the label-only attack of~\cite{choquette2021label}, combining gap, boundary-distance, and augmentation attacks, and reports attack accuracy on member (forget-train) versus non-member data, where $0.5$ indicates the attacker cannot infer membership. KL divergence is reported as $\mathrm{KL}(\mathcal{M}_{\text{unlearned}} \,\|\, \mathcal{M}_{\text{oracle}})$ over the evaluation set, measuring proximity of the unlearned model to the oracle.}
+
+\textcolor{red}{Because class-attribution accuracy alone does not capture the open-set, embedding-distance-thresholding nature of real-world biometric verification, we additionally report False Accept Rate (FAR) at thresholds $0.3$, $0.4$, and $0.5$, and Equal Error Rate (EER), computed by matching forget-class probes against the retain gallery under cosine similarity. Low FAR/EER close to the Oracle indicates that removed identities are not confused with any retained identity beyond chance level.}
 
 \vspace{0.2cm}
 \noindent
@@ -89,6 +91,30 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 \vspace{0.2cm}
 \caption{Localized regularization reduces total $\ell_2$ norm while maintaining effective unlearning.}
 \label{tab:local_effect}
+\end{table}
+
+\vspace{0.2cm}
+\noindent
+\textcolor{red}{\textbf{Open-Set Verification Metrics:} Table~\ref{tab:far_eer} reports FAR/EER of forget-class probes matched against the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), and both rise similarly over \textit{Before} unlearning ($1.64\%$), indicating that the small increase stems from removing the identities rather than confusing them with a specific retained identity.}
+
+\begin{table}[!ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\textcolor{red}{
+\begin{tabular}{lcccc}
+\toprule
+Model & FAR@0.3 & FAR@0.4 & FAR@0.5 & EER \\
+\midrule
+Before & 11.38\% & 4.84\% & 1.64\% & 13.33\% \\
+\rowcolor{orange!10}
+CU & 17.97\% & 8.52\% & 3.83\% & 21.99\% \\
+Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
+\bottomrule
+\end{tabular}}
+\vspace{0.2cm}
+\caption{\textcolor{red}{FAR/EER of forget-class probes against the retain gallery on CASIA-Iris.}}
+\label{tab:far_eer}
 \end{table}
 
 \noindent

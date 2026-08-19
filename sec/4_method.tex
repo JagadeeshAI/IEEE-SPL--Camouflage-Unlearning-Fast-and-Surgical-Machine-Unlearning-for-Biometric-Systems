@@ -40,7 +40,7 @@ Comprehensive parameter updates risk instability under limited replay data. Insp
 \begin{equation}
 \mathcal{L}_{\textit{local}} = \lambda_{\textit{local}} \sum_{g=1}^{G} \|\theta_g\|_2
 \end{equation}
-where $\theta_g$ represents parameters in block $g$, and $G$ is the total number of groups available. This group-Lasso-inspired approach concentrates updates to specific blocks while leaving others unchanged, helping preserve retained knowledge under constrained replay settings. The total loss integrates all components:
+where $\theta_g$ represents parameters in block $g$, and $G$ is the total number of groups available. \textcolor{red}{Each $\theta_g$ is initialized at zero and tracks the \emph{change} accumulated in block $g$ relative to the pretrained weights, so $\mathcal{L}_{\textit{local}}$ penalizes the magnitude of updates rather than the absolute magnitude of the parameters themselves.} This group-Lasso-inspired approach concentrates updates to specific blocks while leaving others unchanged, helping preserve retained knowledge under constrained replay settings. The total loss integrates all components:
 \begin{equation}
 \mathcal{L}_{\textit{total}} = \mathcal{L}_{\textit{f}} + \lambda_{\textit{dom}} \mathcal{L}_{\textit{dom}} + \mathcal{L}_{\textit{ret}} + \mathcal{L}_{\textit{local}}
 \end{equation}

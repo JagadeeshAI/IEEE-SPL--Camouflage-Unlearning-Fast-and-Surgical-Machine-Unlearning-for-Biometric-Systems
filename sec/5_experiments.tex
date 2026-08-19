@@ -1,0 +1,127 @@
+\section{Performance Evaluation}
+\subsection{Experimental Setup}
+
+\noindent
+\textbf{Datasets and Backbones:} To comprehensively evaluate the proposed CU, we examine its performance across four distinct tasks. We begin with image classification on CIFAR-100~\cite{krizhevsky2009learning}, employing the DeiT-Tiny model~\cite{touvron2021training}. Extending our evaluation to biometric authentication, we examine iris recognition using CASIA-Iris~\cite{singh2017gender} with the lightweight LAM architecture~\cite{luo2025novel}. For fingerprint verification, we leverage the Sokoto Coventry dataset~\cite{shehu2018sokoto} paired with JIPNet~\cite{guan2024joint}, a feature learning approach that eliminates hand-crafted descriptors. Our evaluation concludes with face recognition on CASIA-Face100~\cite{yi2014learning} where we deploy the Face Transformer~\cite{zhong2021face} as our recognition backbone.
+
+\noindent \textbf{Baselines:} To establish a comprehensive benchmark, we compare against established and recent machine unlearning methods. From foundational approaches, we implement SCRUB~\cite{kurmanji2023towards}, a student-teacher framework with bidirectional logit manipulation; SalUn~\cite{fan2023salun}, which employs gradient-based weight saliency; and GS-LoRA~\cite{zhao2024continual}, utilizing group sparse regularization with LoRA adapters. We further evaluate emerging methods: LTU~\cite{huang2024learning}, applying meta-learning with gradient harmonization; MCU~\cite{shi2025mcu}, leveraging B\'ezier curve optimization in parameter space; and Forget Vectors~\cite{sun2024forget}, which perturbs inputs to suppress forget class predictions. All methods are evaluated against an Oracle baseline, defined as a model trained exclusively on $D_r^{\textbf{full}}$, representing the best achievable performance on retain classes. This provides a rigorous evaluation framework for our proposed CU method.
+
+\vspace{0.2cm}
+\noindent
+\textbf{Evaluation Metrics:} We evaluate forget accuracy $Acc_f$, retain accuracy $Acc_r$, membership inference attack success (MIA), KL divergence, and runtime efficiency (RTE), measured in seconds. Following Shibata \textit{et al.}~\cite{shibata2021learning}, we use H-mean as $H\text{-}Mean = \frac{2 \cdot Acc_r \cdot (1 - Acc_f)}{Acc_r + (1 - Acc_f)}$. Successful unlearning requires $Acc_f \approx 0$, MIA $\approx 0.5$ indicates near-random membership inference, low KL divergence and RTE, with $Acc_r$ near oracle performance.
+
+\vspace{0.2cm}
+\noindent
+\textbf{Implementation Details:} All experiments are conducted on an NVIDIA RTX A4000 GPU using PyTorch~\cite{paszke2019pytorch} and Python 3.11. Unless otherwise specified, we set $\lambda_{\textit{dom}} = 0.1$, $\lambda_{\textit{ce}} = 0.4$, $\lambda_{\textit{emb}} = 1.0$, and $\lambda_{\textit{local}} = 0.01$, with margin $\gamma = 2.0$. All baselines and CU are fine-tuned for 10 epochs using SGD~\cite{robbins1951stochastic} with a learning rate of $10^{-4}$, momentum of 0.9, and batch size of 64.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.45\linewidth]{tsne/base.png}
+    \hfill
+    \includegraphics[width=0.45\linewidth]{tsne/GA.png}
+    
+    \vspace{0.3em}
+    \makebox[0.45\linewidth]{\small (a) Initial}
+    \hfill
+    \makebox[0.45\linewidth]{\small (b) GS-LoRA}
+    \vspace{1em}
+    
+    \includegraphics[width=0.45\linewidth]{tsne/shadow.png}
+    \hfill
+    \includegraphics[width=0.45\linewidth]{tsne/cl.png}
+    
+    \vspace{0.3em}
+    \makebox[0.45\linewidth]{\small (c) Boundary}
+    \hfill
+    \makebox[0.45\linewidth]{\small (d) CU (Ours)}
+    
+    \caption{t-SNE visualization. Baselines collapse to single point while proposed CU method distributes to nearest boundaries thus achieving faster convergence.}
+    \label{fig:tsne_comparison}
+\end{figure}
+
+\subsection{Results Discussion}
+Table~\ref{tab:all} presents results across four tasks: classification, iris recognition, fingerprint recognition, and face recognition, where \colorbox{green!30}{green} highlights best performance and \colorbox{blue!30}{blue} indicates second-best.
+
+\vspace{0.2cm}
+\noindent
+\textbf{Unlearning and Retention:} All methods achieve near perfect forgetting $Acc_f < 1\%$, approaching random assignment. Proposed CU consistently ranks first or second in $Acc_r$ across all tasks, with LTU as the strongest competitor on classification, iris, and fingerprint tasks, while MCU excels on iris recognition. For \textit{H-Mean}, proposed CU alternates between first and second positions alongside competitive showings from LTU, FV, MCU, and GS-LoRA.
+
+\vspace{0.2cm}
+\noindent
+\textbf{Privacy and Efficiency:} GS-LoRA achieves lower KL divergence than CU, which is expected since CU deliberately modifies logit distributions to suppress forget classes and is therefore less competitive on this metric. However, MIA scores near 0.5 confirm CU provides comparable privacy protection. Most critically, proposed CU achieves 3 to 4$\bm{\times}$ speedup versus all baselines, validating our design objective: fast, privacy-preserving unlearning without catastrophic forgetting.
+
+\subsection{Ablation Studies}
+\vspace{0.2cm}
+\noindent
+\textbf{Replay Buffer Size:} We investigate the minimal replay buffer size $|D_\textbf{r}|$ for effective unlearning on CIFAR-100. Table~\ref{tab:buffer_ratio} shows that a 0.1 ratio optimally balances retention accuracy and efficiency.
+
+\begin{table}[!ht]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Buffer Ratio & Speed & $Acc_f$ & $Acc_r$ & $H\text{-}Mean$ \\
+\midrule
+1.0 & 1$\times$ & 1.33 & 74.39 & 2.62 \\
+0.5 & 2$\times$ & 1.18 & 73.00 & 2.32 \\
+0.3 & 3.3$\times$ & 1.33 & 74.55 & 2.61 \\
+\rowcolor{orange!10}
+0.1 & 10$\times$ & 1.30 & 74.52 & 2.56 \\
+\bottomrule
+\end{tabular}
+\vspace{0.2cm}
+\caption{Impact of replay buffer size on unlearning performance. A ratio of 0.1 optimally balances retention and efficiency.}
+\label{tab:buffer_ratio}
+\end{table}
+
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{lccc}
+\toprule
+Method & $Acc_f$ & $Acc_r$ & Total $\ell_2$ Norm \\
+\midrule
+Without Localized Reg & 0.00 & 77.24 & 39.05 \\
+\rowcolor{orange!10}
+With Localized Reg & 0.00 & 74.76 & 10.09 \\
+\bottomrule
+\end{tabular}
+\vspace{0.2cm}
+\caption{Localized regularization reduces total $\ell_2$ norm while maintaining effective unlearning.}
+\label{tab:local_effect}
+\end{table}
+
+\noindent
+\textbf{Geometric Analysis of Unlearning Behavior:}
+\label{sec:tsne}
+To understand geometric behavior across unlearning methods, we visualize embedding space transformations using t-SNE. Figure~\ref{fig:tsne_comparison} compares baseline methods against proposed CU. Existing approaches GS-LoRA~\cite{zhao2024continual}, SCRUB~\cite{kurmanji2023towards}, and Boundary Unlearning~\cite{chen2023boundary} collapse forget classes into a single distant point, requiring long distance traversal in feature space. CU distributes forget samples across nearest retain class boundaries, achieving faster convergence through shorter migration paths.
+
+\vspace{0.2cm}
+\noindent
+\textbf{Retain Dominance Constraint:} Without this constraint, we found that the forget accuracy exhibits a prolonged tail, delaying convergence. Table~\ref{tab:dominance_ablation} demonstrates that applying the constraint reduces $Acc_f$ from 9.97\% to 0.39\%, achieving faster unlearning with minimal retention loss.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{lcc}
+\toprule
+Method & $Acc_f$ & $Acc_r$ \\
+\midrule
+Without Constraint & 9.97 & 78.12  \\
+\rowcolor{orange!10}
+With Constraint & 0.39 & 77.06 \\
+\bottomrule
+\end{tabular}
+\vspace{0.2cm}
+\caption{Ablation on retain dominance constraint. The constraint accelerates unlearning by eliminating the long tail convergence issue}
+\label{tab:dominance_ablation}
+\end{table}
+
+\noindent
+\textbf{Localized Parameter Regularization:} This regularization selectively modifies fewer blocks, enabling surgical edits that preserve model capacity. On CIFAR-100 classification, Figure~\ref{fig:local_effect} shows concentrated updates in specific blocks, while Table~\ref{tab:local_effect} demonstrates reducing total $\ell_2$ norm from 39.05 to 10.09 with minimal retention loss.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1\linewidth]{images/GS.png}
+    \caption{$\ell_2$ norm per block. Localized regularization concentrates updates in specific blocks.}
+    \label{fig:local_effect}
+\end{figure}

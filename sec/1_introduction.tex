@@ -1,0 +1,32 @@
+\section{Introduction}
+\IEEEPARstart{M}{achine} unlearning (MU) has emerged as a critical research area, addressing the imperative to prevent unauthorized data exploitation, eliminate harmful model behaviors, and safeguard user privacy~\cite{zhu2024privauditor}. A natural consideration follows: what drives the necessity for unlearning? The proliferation of AI misuse ranging from phishing generation and model inversion attacks to perpetuating misinformation has prompted regulatory frameworks~\cite{li2024model,prabhakar2025model,kahla2022label}. Frameworks like the General Data Protection Regulation (GDPR) and California Consumer Privacy Act (CCPA)~\cite{goldman2020introduction,data2018general} mandate data erasure capabilities. These regulations require model service providers to erase user data from learned representations upon request. This establishes both legal and ethical obligations for responsible AI deployment. Crucially, users possess the right to request data removal at any time. This transforms unlearning from a one time operation into a continuous process throughout a model's deployment lifecycle. Per-request efficiency, therefore, becomes a first-class concern.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{images/Cam-Page-1.drawio.png}
+    \caption{\textbf{Unlearning under sequential removal cycles.} (Left) Under one-shot unlearning on pre-trained vision models, existing MU methods succeed. (Right) Biometric deployment requires sequential unlearning cycles over the model lifecycle; existing methods degrade under this workload, either losing retention accuracy or incurring prohibitive per-request compute. \colorbox{red!30}{Red} databases denote forget data, \colorbox{green!30}{green} databases denote retain data, and MU denotes the machine unlearning process.}
+    \label{fig:placeholder11}
+\end{figure}
+
+Existing machine unlearning methods predominantly target image classification~\cite{wuerkaixi2025accurate} and generative tasks~\cite{wei2025emma}, with limited exploration of privacy-critical biometric systems. While face recognition~\cite{de2024unlearning,zakharov2026face,shivam2025cure} has received modest attention, fingerprint and iris recognition remains substantially less studied. This gap persists despite their sensitive nature and widespread deployment in authentication systems. Contemporary approaches rely primarily on KL divergence maximization~\cite{kurmanji2023towards} or gradient ascent~\cite{zhao2024continual}. These methods implement many-to-one mappings that force forgotten class embeddings toward a single distant point in feature space. Alternative strategies include saliency-based selection~\cite{fan2023salun}, geometric boundary manipulation~\cite{chen2023boundary}, perturbation-based forgetting~\cite{sun2024forget}, and meta-learning optimization~\cite{huang2024learning,shi2025mcu}. A key observation across all these methods is that every forget sample is driven toward a single collapse point in the decision space. Even when a sample already lies far from the retain manifold, it must still traverse the full distance to this distant target. This increases convergence time and GPU cost, as observed in Table~\ref{tab:all}. Figure~\ref{fig:Key_observation} visualizes this many-to-one collapse behavior; a detailed ablation is provided in Section~\ref{sec:tsne}.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.48\linewidth]{tsne/base.png}
+    \includegraphics[width=0.48\linewidth]{tsne/GA.png}
+    \makebox[0.45\linewidth]{(a) Initial}
+    \makebox[0.45\linewidth]{(b) Gradient Ascent}
+    \caption{\textbf{Many-to-one collapse in existing unlearning.} (a) Initial embedding space with well-separated forget and retain clusters. (b) After gradient ascent, all forget classes collapse toward a single distant point in feature space, regardless of their original position. Samples already far from the retain manifold must still traverse the full distance to this shared target, inflating convergence time and compute cost per removal request.}
+    \label{fig:Key_observation}
+\end{figure}
+
+Biometric recognition differs from general classification in ways that directly affect unlearning feasibility. Biometric systems deploy on resource-constrained edge devices. Removal requests arrive sequentially and frequently over the deployment lifecycle. This transforms unlearning into a recurring operational cost rather than a one-time procedure. Under this workload, existing many-to-one methods become prohibitive as per request compute scales poorly with request frequency. Compounding this, existing unlearning methods have been designed and benchmarked almost exclusively on ResNet~\cite{he2016deep} or ViT backbones~\cite{dosovitskiy2020image} for CIFAR~\cite{krizhevsky2009learning} and ImageNet~\cite{russakovsky2015imagenet}. Their transferability to biometric backbones such as Face Transformer~\cite{zhong2021face}, LAM~\cite{luo2025novel}, and JIPNet~\cite{guan2024joint} remains untested, despite these architectures being the standard in deployed authentication systems. What biometric unlearning requires instead is a cycle-robust method validated directly on biometric backbones (Fig.~\ref{fig:placeholder11}).
+
+To address these challenges, we propose Camouflage Unlearning (CU), a novel framework that achieves 3--4$\times$ faster convergence while maintaining robust performance. Unlike existing many-to-one approaches, CU pushes forget-class embeddings toward the nearest retained class boundaries, effectively reducing migration distances. To perform surgical modifications and minimize collateral damage to retain classes, CU employs localized regularization concentrated in specific blocks of the neural network for additional details, please refer to Section~\ref{sec:4}.
+
+Our main contributions are summarized as follows:
+\begin{enumerate}
+    \item To the best of our knowledge, this is the among the earliest comprehensive studies of machine unlearning for privacy-critical biometric systems, including fingerprint, iris, and face recognition.
+    \item We introduce Camouflage Unlearning, which achieves $3$--$4\times$ faster convergence compared to SoTA unlearning methods while maintaining competitive retention accuracy and privacy guarantees.
+    \item We conduct extensive empirical evaluation across multiple biometric and classification domains, demonstrating that CU concentrates updates in specific network blocks and remains effective under data-scarce replay conditions.
+\end{enumerate}

@@ -1,0 +1,76 @@
+\section{Results Discussion}
+\vspace{0.2cm}
+\noindent
+\textbf{Attention Maps:} Accuracy metrics alone cannot reveal whether the model still relies on forgotten features internally, so we visualize attention maps on forget samples from CASIA-Face100~\cite{yi2014learning} before and after Camouflage Unlearning. Dark red regions indicate pixels most influential to the decision. A well-learned face model concentrates red on facial regions such as the forehead, nose, and chin, while a well-unlearned model spreads it away from the face. As shown in Figure~\ref{fig:attention_maps}, the base model focuses on facial regions, whereas both the retrained and CU-unlearned models shift attention toward peripheral areas such as hair and background, confirming that CU effectively removes identity-specific features and approaches the retrained oracle.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{images/Cam-Page-6.drawio.png}
+    \caption{Attention maps on forget samples. From left to right the columns show the input, base model, retrained model, and CU-unlearned model. Both retrained and CU-unlearned models disperse attention away from facial regions compared to the base model, indicating successful removal of identity-specific features.}
+    \label{fig:attention_maps}
+\end{figure}
+
+
+\vspace{0.2cm}
+\noindent
+\textbf{Backbone Unlearning vs Surface-Level Unlearning:} A key question arises for Camouflage Unlearning. Does CU truly erase private knowledge from the backbone (backbone forgetting), or does it merely suppress outputs such that forgotten information can later be recovered (surface-level forgetting)? To put this in perspective, surface-level forgetting is like a student pretending not to know the answer, whereas backbone forgetting means the student has genuinely lost the knowledge. Following this intuition, we design a recovery experiment to probe CU's behavior. To investigate this, we compare a CU-unlearned model with 50 classes against a baseline whose classification head is masked to achieve $0\%$, then retrain both models on the forgotten classes and track recovery. As shown in Figure~\ref{fig:surface_level_unlearning}, CU recovers gradually, confirming genuine backbone unlearning.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{images/surface_level_unlearning.png}
+    \caption{Backbone vs surface-level unlearning. CU recovers gradually (genuine forgetting) while head-masking recovers rapidly (superficial).}
+    \label{fig:surface_level_unlearning}
+\end{figure}
+
+\vspace{0.2cm}
+\noindent
+\textbf{Scalability:} We demonstrate the scalability of Camouflage Unlearning across pre-trained models of varying sizes. We evaluate five ViT-based backbones ranging from DeiT-Tiny to ViT-Large, covering a wide spectrum of model capacities. Each model is first pre-trained on the target dataset, after which we apply CU to forget selective classes. As shown in Table~\ref{tab:vit_scale}, CU exhibits consistent scalability, achieving effective forgetting while preserving retain accuracy across both lightweight and large-scale architectures.
+
+\begin{table}[!ht]
+\centering
+\small
+\begin{tabular}{l|cc|cc}
+\toprule
+\multirow{2}{*}{Model} & \multicolumn{2}{c|}{Before Unlearning} & \multicolumn{2}{c}{After Unlearning} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+& $Acc_f$ & $Acc_r$ & $Acc_f \downarrow$ & $Acc_r \uparrow$ \\
+\midrule
+DeiT-Tiny   & 75.25 & 75.67 & 0.40& 74.46 \\
+DeiT-Small  & 74.86 & 74.01 & 1.35 & 73.89 \\
+DeiT-Base   & 74.32 & 74.15 & 0.87 & 72.58 \\
+ViT-Base    & 72.58 & 73.21 & 2.35 & 70.35 \\
+ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
+\bottomrule
+\end{tabular}
+\vspace{0.2cm}
+\caption{Effect of ViT backbone scale on unlearning performance.}
+\label{tab:vit_scale}
+\end{table}
+
+\vspace{0.2cm}
+\noindent
+\textbf{Sequential Removal Workload:} To validate that existing unlearning methods are designed for single shot forgetting rather than the continual removal workload required by biometric edge deployments, we conduct a pilot study using four recent unlearning methods DELETE~\cite{zhou2025decoupled}, LoTUS~\cite{spartalis2025lotus}, MUNBa~\cite{wu2025munba}, and LTU~\cite{huang2024learning} alongside our proposed CU. Each method is evaluated across successive retain forget splits 100 classes per task on both classification CIFAR-100~\cite{krizhevsky2009learning} and face recognition CASIA-Face100~\cite{yi2014learning} tasks. As shown in Figure~\ref{fig:pilot_study}, baseline methods exhibit progressive retain accuracy degradation across cycles, confirming their inability to handle high frequency removal requests. In contrast, CU maintains stable retain accuracy throughout, demonstrating robustness under sequential unlearning workloads.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.48\linewidth]{images/classification_results.png}
+    \hfill
+    \includegraphics[width=0.48\linewidth]{images/face_recognition_results.png}
+    
+    \vspace{0.3em}
+    \makebox[0.48\linewidth]{\small (a) CIFAR-100}
+    \hfill
+    \makebox[0.48\linewidth]{\small (b) Face Recognition}
+    \vspace{0.1cm}
+    \caption{Retain accuracy across sequential unlearning cycles. Existing methods degrade progressively while CU maintains stable performance on both benchmarks.}
+    \label{fig:pilot_study}
+\end{figure}
+
+
+\subsection{On the Necessity of the Retain Buffer}
+\label{8.1}
+A natural concern for Camouflage Unlearning is whether maintaining the replay buffer $D_r \subset D_r^{\text{full}}$ contradicts GDPR and CCPA mandates on data erasure. We argue that $D_r$ is fundamentally unavoidable for preserving task-critical knowledge, since without architectural support such as modular pathways, all parameters are jointly adjusted using both $D_f$ and $D_r^{\text{full}}$ during pretraining, making disentanglement infeasible without $D_r$ access.
+
+Attempts to bypass $D_r$ are limited. Impair and repair methods~\cite{tarun2023fast} still require $D_r$ for repair, while source-free unlearning~\cite{ahmed2025towards} estimates retain data Hessians from $D_f$ alone but is restricted to convex losses and linear classifiers, making it inapplicable to transformers and ResNets. All established non-convex methods critically rely on $D_r$, whether through Fisher information or saliency~\cite{kirkpatrick2017overcoming,fan2023salun}, explicit retention losses~\cite{kurmanji2023towards,zhao2024continual}, or continual unlearning mechanisms such as mnemonic codes, task embeddings, experience replay, and stability regularizers~\cite{shibata2021learning,adhikari2025unlearning,liu2022continual,chatterjee2024unified,huang2025unified}.
+
+Generative tasks offer exceptions such as FLAT~\cite{wang2024llm} and ESD~\cite{gandikota2023erasing}, which avoid $D_r$ via regularizers or teacher-generated samples, but few practical approaches eliminate $D_r$ for non-convex deep learning without sacrificing retention. Camouflage Unlearning therefore retains a minimal $D_r$ (at most $10\%$ of $D_r^{\text{full}}$), consistent with limited lawful processing allowances under GDPR and CCPA for limited lawful processing necessary to fulfill erasure obligations.

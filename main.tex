@@ -1,0 +1,86 @@
+\documentclass[journal]{IEEEtran}
+
+\ifCLASSINFOpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+\usepackage{mathtools, amssymb, amsfonts, mathrsfs, bm}
+\usepackage{booktabs, multirow, makecell, adjustbox, colortbl, xcolor}
+\usepackage{algorithm, algpseudocode}
+\usepackage{url, float, pifont, soul, cancel}
+\usepackage[caption=false]{subfig}
+\usepackage[colorlinks=true,linkcolor=blue,
+            citecolor=blue,urlcolor=blue,
+            bookmarks=false]{hyperref}
+
+\definecolor{bestgreen}{RGB}{144,238,144}
+\definecolor{secondblue}{RGB}{173,216,230}
+\newcommand{\best}[1]{\cellcolor{bestgreen}#1}
+\newcommand{\second}[1]{\cellcolor{secondblue}#1}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\setlength{\fboxsep}{1pt}
+\def\x{{\mathbf x}}
+\def\L{{\cal L}}
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\begin{document}
+
+\title{Camouflage Unlearning: Fast and Surgical Machine 
+Unlearning for Biometric Systems}
+
+%% ====================================================
+%% PEER REVIEW VERSION — uncomment block below
+%% Author names hidden for blind review — saves space!
+%% ====================================================
+% \author{Anonymous Authors}
+
+%% ====================================================
+%% FINAL / CAMERA-READY — uncomment block below
+%% (comment out the block above first)
+%% ====================================================
+% \author{First~A.~Author,~\IEEEmembership{Member,~IEEE,}
+%         Second~B.~Author,~\IEEEmembership{Member,~IEEE,}
+%         and~Third~C.~Author~\IEEEmembership{Senior Member,~IEEE}%
+% \thanks{This work was supported in part by [Funding Agency]
+%         under Grant [Number].}
+% \thanks{First A. Author is with [Department], [University],
+%         [City, Country]. E-mail: first@university.edu}
+% \thanks{Second B. Author is with [Department], [University],
+%         [City, Country]. E-mail: second@university.edu}
+% \thanks{Third C. Author is with [Department], [University],
+%         [City, Country]. E-mail: third@university.edu}
+% }
+
+\markboth{IEEE Signal Processing Letters,~Vol.~XX, No.~XX, 2026}%
+{Author \MakeLowercase{\textit{et al.}}: Camouflage Unlearning}
+
+\maketitle
+
+%% Abstract + Keywords
+\input{sec/0_abstact}
+
+%% Keep for peer review, REMOVE for final version
+\IEEEpeerreviewmaketitle
+
+%% Main Sections
+\input{sec/1_introduction}
+\input{sec/2_related_work}
+\input{sec/3_problem_statement}
+\input{sec/4_method}
+\input{sec/5_experiments}
+\input{sec/6_results}
+\input{sec/7_discussion}
+\input{sec/8_conclusion}
+
+%% Acknowledgment — hide during review if needed
+% \section*{Acknowledgment}
+% The authors would like to thank ...
+
+\bibliographystyle{IEEEtran}
+\bibliography{ref}
+
+\end{document}

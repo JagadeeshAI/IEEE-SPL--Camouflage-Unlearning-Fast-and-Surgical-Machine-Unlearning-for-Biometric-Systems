@@ -1,0 +1,80 @@
+
+
+\section{Methodology}
+\label{sec:4}
+\subsection{Overview}
+We propose Camouflage Unlearning (CU), which relocates forget class embeddings to retain class boundaries through direct centroid mapping. Unlike existing many-to-one approaches that force all forget classes toward a single distant point, CU implements many-to-many distribution, reducing migration distances and accelerating convergence as shown in Figure~\ref{fig:method}. Subsection~\ref{4.2} details the complete camouflage mechanism and associated loss functions.
+
+\subsection{Camouflage Unlearning}
+\label{4.2}
+We compute class centroids in embedding space by averaging feature representations:
+\begin{equation}
+c_k = \frac{1}{|D_k|}\sum_{x \in D_k} \textit{emb}(x)
+\end{equation}
+yielding retain centroids $\{c_{r_1}, \dots, c_{r_K}\}$ and forget centroids $\{c_{f_1}, \dots, c_{f_M}\}$, where $K$ and $M$ denote the number of retain and forget classes, respectively.
+
+For each forget centroid $c_{f_i}$, we identify its nearest retain centroid:
+\begin{equation}
+j^* = \arg\min_j \|c_{f_i} - c_{r_j}\|_2
+\end{equation}
+We then set the target as the nearest retain centroid:
+\begin{equation}
+\mathbf{t}_i = c_{r_{j^*}}
+\end{equation}
+This direct mapping forces forget class embeddings to collapse into retain-class decision boundaries, minimizing migration distance while achieving effective camouflage.
+
+We pull forget embeddings toward their assigned targets:
+\begin{equation}
+\mathcal{L}_{\textit{f}} = \frac{1}{|D_\textit{f}|}\sum_{(\mathbf{x}, y) \in D_\textit{f}} \|\textit{emb}(\mathbf{x}) - \mathbf{t}_y\|^2
+\end{equation}
+This collapses forget classes into retain boundaries and destroys their discriminative variance. As forget embeddings migrate toward retain boundaries, they risk corrupting retain decision regions and prolonging convergence. To mitigate this, we enforce that retain logits dominate forget logits by margin $\gamma$:
+\begin{equation}
+\mathcal{L}_{\textit{dom}} = \textit{ReLU}\left(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\right)
+\end{equation}
+where $z_i$ are logits, $F$ and $R$ denote forget and retain class indices, and $\gamma = 2.0$. This constraint accelerates forget-class suppression while preserving retain accuracy. We preserve retain-class knowledge through classification and embedding stability:
+\begin{equation}
+\mathcal{L}_{\textit{ret}} = \lambda_{\textit{ce}} \cdot \textit{CE}(\mathbf{z}_r, y_r) + \lambda_{\textit{emb}} \cdot \frac{1}{|D_\textit{r}|}\sum_{(\mathbf{x}, y) \in D_\textit{r}} \|\textit{emb}(\mathbf{x}) - c_y\|^2
+\end{equation}
+where $\mathbf{z}_r$ are retain logits, $y_r$ are labels, and $c_y$ are original retain centroids.
+Comprehensive parameter updates risk instability under limited replay data. Inspired by group sparse selection~\cite{zhao2024continual}, we apply localized regularization that selectively updates fewer transformer blocks:
+\begin{equation}
+\mathcal{L}_{\textit{local}} = \lambda_{\textit{local}} \sum_{g=1}^{G} \|\theta_g\|_2
+\end{equation}
+where $\theta_g$ represents parameters in block $g$, and $G$ is the total number of groups available. This group-Lasso-inspired approach concentrates updates to specific blocks while leaving others unchanged, helping preserve retained knowledge under constrained replay settings. The total loss integrates all components:
+\begin{equation}
+\mathcal{L}_{\textit{total}} = \mathcal{L}_{\textit{f}} + \lambda_{\textit{dom}} \mathcal{L}_{\textit{dom}} + \mathcal{L}_{\textit{ret}} + \mathcal{L}_{\textit{local}}
+\end{equation}
+
+\subsection{Algorithmic Preview of Camouflage Unlearning}
+Algorithm~\ref{alg:cu} summarizes the complete Camouflage Unlearning procedure, which computes class centroids, assigns each forget class to its nearest retain centroid as a target, and iteratively updates the model using the combined forget, dominance, and retain losses.
+
+\begin{algorithm}[htbp]
+\caption{Camouflage Unlearning}
+\label{alg:cu}
+\begin{algorithmic}[1]
+\Require Pre-trained model $\mathcal{M}$, forget data $D_f$, retain data $D_r$, margin $\gamma$, hyperparameters $\lambda_{\text{dom}}, \lambda_{\text{ce}}, \lambda_{\text{emb}}, \lambda_{\text{local}}$, epochs $E$
+\Ensure Unlearned model $\mathcal{M}'$
+\For{each class $k$ in $D_r \cup D_f$}
+    \State $c_k \gets \tfrac{1}{|D_k|}\textstyle\sum_{x \in D_k} \operatorname{emb}(x)$ \Comment{Eq.~1}
+\EndFor
+\For{each forget class $i$ with centroid $c_{f_i}$}
+    \State $j^* \gets \arg\min_j \|c_{f_i} - c_{r_j}\|_2$ \Comment{Eq.~2}
+    \State $\mathbf{t}_i \gets c_{r_{j^*}}$ \Comment{Eq.~3}
+\EndFor
+\For{epoch $= 1$ to $E$}
+    \For{each mini-batch from $D_f, D_r$}
+        \State \Comment{\textit{Forget loss (Eq.~4)}}
+        \State $\mathcal{L}_f \gets \tfrac{1}{|D_f|}\textstyle\sum_{(\mathbf{x},y) \in D_f} \|\operatorname{emb}(\mathbf{x}) - \mathbf{t}_y\|^2$
+        \State \Comment{\textit{Dominance loss (Eq.~5)}}
+        \State $\mathcal{L}_{\text{dom}} \gets \operatorname{ReLU}\bigl(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\bigr)$
+        \State \Comment{\textit{Retain loss (Eq.~6)}}
+        \State $\mathcal{L}_{\text{ret}} \gets \lambda_{\text{ce}} \cdot \operatorname{CE}(\mathbf{z}_r, y_r)$
+        \Statex \hspace{3.2em} $+ \; \lambda_{\text{emb}} \cdot \tfrac{1}{|D_r|}\textstyle\sum_{(\mathbf{x},y) \in D_r} \|\operatorname{emb}(\mathbf{x}) - c_y\|^2$
+        \State $\mathcal{L}_{\text{local}} \gets \lambda_{\text{local}} \textstyle\sum_{g=1}^{G} \|\theta_g \|_2$ \Comment{Eq.~7}
+        \State $\mathcal{L}_{\text{total}} \gets \mathcal{L}_f + \lambda_{\text{dom}} \mathcal{L}_{\text{dom}} + \mathcal{L}_{\text{ret}} + \mathcal{L}_{\text{local}}$ \Comment{Eq.~8}
+        \State Update $\mathcal{M}$ via $\nabla_\theta \mathcal{L}_{\text{total}}$
+    \EndFor
+\EndFor
+\State \Return $\mathcal{M}'$
+\end{algorithmic}
+\end{algorithm}

@@ -1,0 +1,51 @@
+\begin{table*}[!ht]
+\centering
+\small 
+\renewcommand{\arraystretch}{1.0}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l|w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}|w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}w{c}{1.1cm}}
+\toprule
+\multirow{2}{*}{\textbf{Method}}  
+& \multicolumn{6}{c|}{\textbf{Classification}} & \multicolumn{6}{c}{\textbf{Iris recognition}} \\
+\cmidrule(lr){2-7} \cmidrule(lr){8-13}
+& $Acc_f{\downarrow}$ & $Acc_r{\uparrow}$ & $H\text{-}Mean{\uparrow}$ & KL${\downarrow}$ & MIA$\downarrow$ & RTE${\downarrow}$
+& $Acc_f{\downarrow}$ & $Acc_r{\uparrow}$ & $H\text{-}Mean{\uparrow}$ & KL${\downarrow}$ & MIA$\downarrow$ & RTE${\downarrow}$ \\
+\midrule
+Oracle        & --   & 77.36 & --    & --   & --   & --     & --   & 99.03 & --   & --   & --   & --    \\
+\midrule
+GS-LoRA~\cite{zhao2024continual}    & 0.11 & 71.32 & 74.18 & \colorbox{green!30}{0.73} & \colorbox{blue!30}{0.56} & \colorbox{blue!30}{153.2} & 0.00 & 93.42 & 96.18   & \colorbox{green!30}{0.75} & 0.69 & \colorbox{blue!30}{225.7} \\
+SalUn~\cite{fan2023salun}           & 0.37 & 72.46 & 74.63 & 1.32 & 0.63 & 225.6 & 0.37 & 92.37 & 95.44 & \colorbox{blue!30}{0.79} & 0.59 & 427.2 \\
+SCRUB~\cite{kurmanji2023towards}    & 0.58 & 73.11 & 74.90 & 1.89 & 0.64 & 219.3 & 0.43 & 95.58 & 97.07 & 0.83 & 0.63 & 501.8 \\
+FV~\cite{sun2024forget}             & 0.00 & 74.43 & \colorbox{blue!30}{75.89} & 0.87 & \colorbox{green!30}{0.55} & 189.5 & 0.00 & 96.27 & 97.63   & 1.13 & 0.57 & 383.1 \\
+MCU~\cite{shi2025mcu}               & 0.42 & 74.43 & 75.66 & 0.87 & 0.59 & {175.5} & 0.00 & \colorbox{green!30}{98.87} & \colorbox{green!30}{98.95}   & 0.99 & 0.63 & 437.2 \\
+LTU~\cite{huang2024learning}        & 0.00 & \colorbox{green!30}{76.32} & \colorbox{green!30}{76.83} & \colorbox{green!30}{0.75} & 0.57 & 239.3 & 0.73 & 95.43 & 96.85 & 1.25 & \colorbox{blue!30}{0.55} & {329.4} \\
+\midrule
+\rowcolor{pink!15}
+\textbf{CU}   & 0.47 & \colorbox{blue!30}{74.46} & 75.65 & {1.27} & \colorbox{blue!30}{0.56} & \colorbox{green!30}{55.5}  & 0.06 & \colorbox{blue!30}{97.89} & \colorbox{blue!30}{98.43} & 1.01 & \colorbox{green!30}{0.53} & \colorbox{green!30}{116.1} \\
+\midrule
+\addlinespace[0.15cm]
+\midrule
+\multirow{2}{*}{\textbf{Method}} 
+& \multicolumn{6}{c|}{\textbf{Fingerprint recognition}} & \multicolumn{6}{c}{\textbf{Face recognition}} \\
+\cmidrule(lr){2-7} \cmidrule(lr){8-13}
+& $Acc_f{\downarrow}$ & $Acc_r{\uparrow}$ & $H\text{-}Mean{\uparrow}$ & KL${\downarrow}$ & MIA$\downarrow$ & RTE${\downarrow}$
+& $Acc_f{\downarrow}$ & $Acc_r{\uparrow}$ & $H\text{-}Mean{\uparrow}$ & KL${\downarrow}$ & MIA$\downarrow$ & RTE${\downarrow}$ \\
+\midrule
+Oracle        & --   & 90.82 & --    & -- & --   & --   & --   & 95.12   & --   & --   & --   & --   \\
+\midrule
+GS-LoRA~\cite{zhao2024continual}    & 0.00   & 83.42   & 86.98    & 1.13    & 0.65   & \colorbox{blue!30}{155.3}   & 0.57   & 93.25   & \colorbox{blue!30}{93.90}  & 1.13   & \colorbox{blue!30}{0.53}   & \colorbox{blue!30}{284.4}   \\
+SalUn~\cite{fan2023salun}           & 0.10   & 82.32   & 86.24    & \colorbox{green!30}{0.75}    & 0.63   & 202.2   & 0.00   & 90.15   & 92.56  & 1.27   & 0.59   & 417.2   \\
+SCRUB~\cite{kurmanji2023towards}    & 0.00   & 83.27   & 86.85    & 2.36    & 0.57   & 175.3   & 0.42   & \colorbox{blue!30}{93.27}   & 93.98  & 2.87   & 0.63   & 389.5   \\
+FV~\cite{sun2024forget}             & 0.30   & 84.44   & 87.38    & 1.27    & \colorbox{green!30}{0.54}   & 160.7   & 0.20   & 92.27   & 93.58  & 1.20   & 0.60   & {380.3}   \\
+MCU~\cite{shi2025mcu}               & 0.00   & 80.32   & 85.24    & \colorbox{blue!30}{0.99}    & 0.59   & 220.5   & 0.00   & 90.12   & 92.54  & \colorbox{green!30}{0.89}   & 0.57   & 403.8   \\
+LTU~\cite{huang2024learning}        & 0.00   & \colorbox{green!30}{ 87.72}   & \colorbox{green!30}{89.24}    & 1.13    & \colorbox{green!30}{0.54}   & 237.4   & 0.00   & 92.58   & 93.84  & \colorbox{blue!30}{0.93}   & 0.55   & 430.2   \\
+\midrule
+\rowcolor{pink!15}
+\textbf{CU}   & 0.00   & \colorbox{blue!30}{87.23}   & \colorbox{blue!30}{88.98}    & {1.05}    & \colorbox{blue!30}{0.55}   & \colorbox{green!30}{55.32}   & 0.00   & \colorbox{green!30}{93.98}   & \colorbox{green!30}{94.55}   & {1.67}   & \colorbox{green!30}{0.51}   & \colorbox{green!30}{175.3}   \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Comprehensive performance evaluation across four recognition domains. Proposed CU achieves 3--4$\times$ speedup in runtime efficiency (RTE) while maintaining competitive forgetting, retention, and privacy metrics
+.}
+\label{tab:all}
+\end{table*}

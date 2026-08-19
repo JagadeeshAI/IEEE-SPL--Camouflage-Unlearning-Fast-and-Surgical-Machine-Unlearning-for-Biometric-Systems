@@ -112,67 +112,33 @@ To understand geometric behavior across unlearning methods, we visualize embeddi
 \subsection{Ablation Studies}
 \vspace{0.2cm}
 \noindent
-\textbf{Replay Buffer Size:} We investigate the minimal replay buffer size $|D_\textbf{r}|$ for effective unlearning on CIFAR-100. Table~\ref{tab:buffer_ratio} shows that a 0.1 ratio optimally balances retention accuracy and efficiency.
+We ablate three design choices on CIFAR-100: the replay buffer ratio $|D_\textbf{r}|$, the retain dominance constraint, and localized regularization. Table~\ref{tab:ablation_all} shows a 0.1 buffer ratio optimally balances retention and efficiency; the dominance constraint reduces $Acc_f$ from 9.97\% to 0.39\% by eliminating the long-tail convergence issue; and localized regularization reduces total $\ell_2$ norm from 39.05 to 10.09 with minimal retention loss, with Figure~\ref{fig:local_effect} showing the updates concentrate in specific blocks.
 
 \begin{table}[!ht]
 \centering
 \small
-\begin{tabular}{lcccc}
+\begin{tabular}{llccc}
 \toprule
-Buffer Ratio & Speed & $Acc_f$ & $Acc_r$ & $H\text{-}Mean$ \\
+\textbf{Ablation} & \textbf{Setting} & $Acc_f{\downarrow}$ & $Acc_r{\uparrow}$ & \textbf{Extra} \\
 \midrule
-1.0 & 1$\times$ & 1.33 & 74.39 & 2.62 \\
-0.5 & 2$\times$ & 1.18 & 73.00 & 2.32 \\
-0.3 & 3.3$\times$ & 1.33 & 74.55 & 2.61 \\
-\rowcolor{orange!10}
-0.1 & 10$\times$ & 1.30 & 74.52 & 2.56 \\
+\multirow{4}{*}{Buffer Ratio $|D_r|$}
+ & 1.0 (1$\times$)   & 1.33 & 74.39 & $H$=2.62 \\
+ & 0.5 (2$\times$)   & 1.18 & 73.00 & $H$=2.32 \\
+ & 0.3 (3.3$\times$) & 1.33 & 74.55 & $H$=2.61 \\
+ & \cellcolor{orange!10}0.1 (10$\times$) & \cellcolor{orange!10}1.30 & \cellcolor{orange!10}74.52 & \cellcolor{orange!10}$H$=2.56 \\
+\midrule
+\multirow{2}{*}{Dominance Constraint}
+ & Without & 9.97 & 78.12 & -- \\
+ & \cellcolor{orange!10}With & \cellcolor{orange!10}0.39 & \cellcolor{orange!10}77.06 & \cellcolor{orange!10}-- \\
+\midrule
+\multirow{2}{*}{Localized Reg.}
+ & Without & 0.00 & 77.24 & $\ell_2$=39.05 \\
+ & \cellcolor{orange!10}With & \cellcolor{orange!10}0.00 & \cellcolor{orange!10}74.76 & \cellcolor{orange!10}$\ell_2$=10.09 \\
 \bottomrule
 \end{tabular}
 \vspace{0.2cm}
-\caption{Impact of replay buffer size on unlearning performance. A ratio of 0.1 optimally balances retention and efficiency.}
-\label{tab:buffer_ratio}
-\end{table}
-
-\vspace{0.2cm}
-\noindent
-\textbf{Retain Dominance Constraint:} Without this constraint, we found that the forget accuracy exhibits a prolonged tail, delaying convergence. Table~\ref{tab:dominance_ablation} demonstrates that applying the constraint reduces $Acc_f$ from 9.97\% to 0.39\%, achieving faster unlearning with minimal retention loss.
-
-\begin{table}[!ht]
-\centering
-\small
-\begin{tabular}{lcc}
-\toprule
-Method & $Acc_f$ & $Acc_r$ \\
-\midrule
-Without Constraint & 9.97 & 78.12  \\
-\rowcolor{orange!10}
-With Constraint & 0.39 & 77.06 \\
-\bottomrule
-\end{tabular}
-\vspace{0.2cm}
-\caption{Ablation on retain dominance constraint. The constraint accelerates unlearning by eliminating the long tail convergence issue}
-\label{tab:dominance_ablation}
-\end{table}
-
-\vspace{0.2cm}
-\noindent
-\textbf{Localized Parameter Regularization:} This regularization selectively modifies fewer blocks, enabling surgical edits that preserve model capacity. On CIFAR-100 classification, Figure~\ref{fig:local_effect} shows concentrated updates in specific blocks, while Table~\ref{tab:local_effect} demonstrates reducing total $\ell_2$ norm from 39.05 to 10.09 with minimal retention loss.
-
-\begin{table}[!ht]
-\centering
-\small
-\begin{tabular}{lccc}
-\toprule
-Method & $Acc_f$ & $Acc_r$ & Total $\ell_2$ Norm \\
-\midrule
-Without Localized Reg & 0.00 & 77.24 & 39.05 \\
-\rowcolor{orange!10}
-With Localized Reg & 0.00 & 74.76 & 10.09 \\
-\bottomrule
-\end{tabular}
-\vspace{0.2cm}
-\caption{Localized regularization reduces total $\ell_2$ norm while maintaining effective unlearning.}
-\label{tab:local_effect}
+\caption{Design ablations: replay buffer ratio, retain dominance constraint, and localized regularization on CIFAR-100. Highlighted rows are CU's default setting.}
+\label{tab:ablation_all}
 \end{table}
 
 \begin{figure}[!ht]
@@ -186,13 +152,16 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 \label{sec:attack}
 \vspace{0.2cm}
 \noindent
-\textcolor{red}{\textbf{Open-Set Verification Metrics:} Table~\ref{tab:far_eer} reports FAR/EER of forget-class probes matched against the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), and both rise similarly over \textit{Before} unlearning ($1.64\%$), indicating that the small increase in open-set false accepts stems from removing the identities rather than from CU specifically. Whether the residual accepts concentrate on individual retain identities is a separate question, addressed per-identity below.}
+\textcolor{red}{Table~\ref{tab:attack_verification}(a) reports FAR/EER of forget-class probes matched against the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), and both rise similarly over \textit{Before} unlearning ($1.64\%$), indicating that the small increase in open-set false accepts stems from removing the identities rather than from CU specifically.}
+
+\textcolor{red}{Whether these residual accepts concentrate on one specific retained identity, a targeted per-identity vulnerability rather than a general accuracy shift, is a separate question. Beyond the $Acc_f$, KL, and confidence-based MIA already reported in Table~\ref{tab:all}, Table~\ref{tab:attack_verification}(b) reports six further attack-based tests on CASIA-Face100 after all forget identities are removed, each referenced against the \emph{Oracle} (retrain, information absent); values are placeholders pending final runs. The assigned-centroid match rate, each forget probe's match rate against its specifically \emph{assigned} nearest retain centroid, is no more frequent for CU than for Oracle, ruling out a concentrated, backdoor-like false-accept behavior between individual forget--retain identity pairs. The low linear-probe and slow relearning rates show forgetting is diffuse and not easily reversed, while label-only and adaptive MIA near chance and a low inversion match rate show that stronger, adaptive attacks fail as well. Results are empirical and attack-relative, not a formal guarantee, and directly support the retain-buffer necessity argument of Section~\ref{8.1}.}
 
 \begin{table}[!ht]
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
 \textcolor{red}{
+\textbf{(a) FAR/EER on CASIA-Iris}\\[3pt]
 \begin{tabular}{lcccc}
 \toprule
 Model & FAR@0.3 & FAR@0.4 & FAR@0.5 & EER \\
@@ -202,21 +171,10 @@ Before & 11.38\% & 4.84\% & 1.64\% & 13.33\% \\
 CU & 17.97\% & 8.52\% & 3.83\% & 21.99\% \\
 Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \bottomrule
-\end{tabular}}
-\vspace{0.2cm}
-\caption{\textcolor{red}{FAR/EER of forget-class probes against the retain gallery on CASIA-Iris.}}
-\label{tab:far_eer}
-\end{table}
-
-\vspace{0.2cm}
-\noindent
-\textcolor{red}{\textbf{Per-Identity Confound Analysis:} A natural concern is whether mapping a forget identity to its nearest retain centroid creates a targeted, per-identity vulnerability rather than a general accuracy shift, i.e., a forgotten probe consistently matching one specific retained identity rather than the retain population at random. Beyond the $Acc_f$, KL, and confidence-based MIA already reported in Table~\ref{tab:all}, Table~\ref{tab:unlearning_evidence} reports six further attack-based tests on CASIA-Face100 after all forget identities are removed, each referenced against the \emph{Oracle} (retrain, information absent); values are placeholders pending final runs. The assigned-centroid match rate, each forget probe's match rate against its specifically \emph{assigned} nearest retain centroid, is no more frequent for CU than for Oracle, ruling out a concentrated, backdoor-like false-accept behavior between individual forget--retain identity pairs. The low linear-probe and slow relearning rates show forgetting is diffuse and not easily reversed, while label-only and adaptive MIA near chance and a low inversion match rate show that stronger, adaptive attacks fail as well. Results are empirical and attack-relative, not a formal guarantee. This evidence directly supports the retain-buffer necessity argument of Section~\ref{8.1}.}
-
-\begin{table}[!ht]
-\centering
+\end{tabular}
+\vspace{0.3cm}
+\textbf{(b) Attack-based confound tests on CASIA-Face100}\\[3pt]
 \scriptsize
-\setlength{\tabcolsep}{3pt}
-\textcolor{red}{
 \begin{tabular}{lcc}
 \toprule
 \textbf{Test} & \textbf{CU} & \textbf{Oracle} \\
@@ -232,6 +190,6 @@ Model inversion match $\downarrow$ & \textbf{3.62} & 3.98 \\
 \bottomrule
 \end{tabular}}
 \vspace{0.15cm}
-\caption{\textcolor{red}{Unlearning evidence under attack on CASIA-Face100, complementing the $Acc_f$, KL, and MIA results of Table~\ref{tab:all}. Values are placeholders pending final runs.}}
-\label{tab:unlearning_evidence}
+\caption{\textcolor{red}{Attack-based verification. (a) FAR/EER of forget-class probes against the retain gallery on CASIA-Iris. (b) Six further attack-based tests on CASIA-Face100, complementing the $Acc_f$, KL, and MIA results of Table~\ref{tab:all}. Values in (b) are placeholders pending final runs.}}
+\label{tab:attack_verification}
 \end{table}

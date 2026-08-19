@@ -1,36 +1,89 @@
-\begin{figure*}
+\begin{figure*}[t]
     \centering
     \includegraphics[width=1\textwidth]{images/Cam-Page-5.drawio.png}
     \caption{Overview of Camouflage Unlearning. Traditional methods collapse all forget classes to a single distant point, requiring long migration paths. CU instead hides each forget class within its nearest retain class boundary, reducing migration distance and accelerating convergence.}
     \label{fig:method}
 \end{figure*}
 
-\section{Problem Setting}
-Let $\mathcal{M}$ be a model pre-trained on dataset $D$, representing a mapping $f_\mathcal{M} : \mathcal{X}_D \rightarrow \mathcal{Y}_D$ from input space $\mathcal{X}_D$ to output space $\mathcal{Y}_D$. Our objective is to selectively discard certain knowledge while preserving remaining knowledge. We partition the data as $D = D_\textit{r}^{\textit{full}} \cup D_\textit{f}$, where $D_\textit{f}$ denotes forget samples and $D_\textit{r}^{\textit{full}}$ denotes retain samples ($D_\textit{r}^{\textit{full}} \cap D_\textit{f} = \emptyset$).
+\section{Problem Setting and Methodology}
+\label{sec:4}
 
-In practice, storing the full retain set is prohibited under GDPR and CCPA regulations for privacy-sensitive data, while for non-private data, retraining remains computationally expensive due to large scale models and datasets. We therefore maintain a small replay buffer $D_\textit{r} \subset D_\textit{r}^{\textit{full}}$ such that $|D_\textit{r}| \ll |D_\textit{r}^{\textit{full}}|$, with $|D_\textit{r}|$ limited to at most 10\% of $|D_\textit{r}^{\textit{full}}|$\footnote{From this point, $D_\textit{r}$ denotes the replay buffer unless specified.}. Before unlearning, $\mathcal{M}$ performs well on $D_\textit{r}$ and $D_\textit{f}$, i.e.,
+\subsection{Problem Setting}
+Let $\mathcal{M}$ be a model pre-trained on $D = D_\textit{r}^{\textit{full}} \cup D_\textit{f}$ ($D_\textit{r}^{\textit{full}} \cap D_\textit{f} = \emptyset$), representing a mapping $f_\mathcal{M} : \mathcal{X}_D \rightarrow \mathcal{Y}_D$. Storing $D_\textit{r}^{\textit{full}}$ is prohibited under GDPR/CCPA, and full retraining is costly, so we retain only a small replay buffer $D_\textit{r} \subset D_\textit{r}^{\textit{full}}$, with $|D_\textit{r}|$ limited to at most 10\% of $|D_\textit{r}^{\textit{full}}|$\footnote{From this point, $D_\textit{r}$ denotes the replay buffer unless specified.}. Before unlearning, $\mathcal{M}$ correctly maps both $D_\textit{f}$ and $D_\textit{r}$. Applying an unlearning algorithm $\mathcal{F}$ (Section~\ref{4.2}) yields $\mathcal{M}' = \mathcal{F}(\mathcal{M}, D_\textit{f}, D_\textit{r})$, under which the forget mapping should no longer hold while the retain mapping persists:
 {\small
 \begin{equation}
 f_{\mathcal{M}} :
 \mathcal{X}_{D_\textit{f}} \rightarrow \mathcal{Y}_{D_\textit{f}} \; ; \;
 \mathcal{X}_{D_\textit{r}} \rightarrow \mathcal{Y}_{D_\textit{r}}
-\label{eq:1}
-\tag{1}
-\end{equation}
-}
-
-Let the unlearning algorithm be $\mathcal{F}$ detailed in Section~\ref{sec:4}, which modifies model $\mathcal{M}$ to obtain $\mathcal{M}'$ via $\mathcal{M}' = \mathcal{F}(\mathcal{M}, D_\textit{f}, D_\textit{r})$. The unlearned model $\mathcal{M}'$ holds a new mapping $f_{\mathcal{M}'}$:
-{\small
-\begin{equation}
+\;\;\Longrightarrow\;\;
 f_{\mathcal{M}'} :
 \mathcal{X}_{D_\textit{f}} \cancel{\rightarrow} \mathcal{Y}_{D_\textit{f}} \; ; \;
 \mathcal{X}_{D_\textit{r}} \rightarrow \mathcal{Y}_{D_\textit{r}}
-\label{eq:2} \tag{2}
+\label{eq:mapping}
 \end{equation}
 }
-Here, $\cancel{\rightarrow}$ denotes that the mapping no longer holds, i.e., the knowledge is forgotten, while $\rightarrow$ indicates the mapping persists. We define successful unlearning as 
+where $\cancel{\rightarrow}$ denotes a forgotten mapping and $\rightarrow$ a retained one. We define successful unlearning as
 \begin{itemize}
     \item Forgetting: $\textit{Acc}(\mathcal{M}', D_\textit{f}) \leq \frac{1}{C}, $
     \item Retention: $\textit{Acc}(\mathcal{M}', D_\textit{r}) \approx \textit{Acc}(\textit{Oracle}, D_\textit{r})$
 \end{itemize}
 where $C$ is the number of classes and Oracle denotes a model trained directly on target classes only.
+
+\subsection{Camouflage Unlearning}
+\label{4.2}
+CU relocates forget-class embeddings to retain-class boundaries via direct centroid mapping. Unlike existing many-to-one approaches that collapse all forget classes to a single distant point, CU implements many-to-many distribution (Figure~\ref{fig:method}), reducing migration distance and accelerating convergence.
+
+We compute class centroids by averaging embeddings, $c_k = \frac{1}{|D_k|}\sum_{x \in D_k} \textit{emb}(x)$, yielding retain centroids $\{c_{r_1}, \dots, c_{r_K}\}$ and forget centroids $\{c_{f_1}, \dots, c_{f_M}\}$, where $K$ and $M$ are the numbers of retain and forget classes. Each forget centroid $c_{f_i}$ is assigned its nearest retain centroid as target:
+\begin{equation}
+\mathbf{t}_i = c_{r_{j^*}}, \quad j^* = \arg\min_j \|c_{f_i} - c_{r_j}\|_2
+\end{equation}
+directly mapping forget embeddings into retain decision boundaries and minimizing migration distance. We pull forget embeddings toward their assigned targets:
+\begin{equation}
+\mathcal{L}_{\textit{f}} = \frac{1}{|D_\textit{f}|}\sum_{(\mathbf{x}, y) \in D_\textit{f}} \|\textit{emb}(\mathbf{x}) - \mathbf{t}_y\|^2
+\end{equation}
+which collapses forget classes into retain boundaries but risks corrupting retain decision regions and prolonging convergence. We therefore enforce that retain logits dominate forget logits by margin $\gamma = 2.0$:
+\begin{equation}
+\mathcal{L}_{\textit{dom}} = \textit{ReLU}\left(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\right)
+\end{equation}
+where $z_i$ are logits and $F, R$ denote forget and retain class indices; this accelerates forget-class suppression while preserving retain accuracy. Retain-class knowledge is preserved through classification and embedding stability:
+\begin{equation}
+\mathcal{L}_{\textit{ret}} = \lambda_{\textit{ce}} \cdot \textit{CE}(\mathbf{z}_r, y_r) + \lambda_{\textit{emb}} \cdot \frac{1}{|D_\textit{r}|}\sum_{(\mathbf{x}, y) \in D_\textit{r}} \|\textit{emb}(\mathbf{x}) - c_y\|^2
+\end{equation}
+where $\mathbf{z}_r$ are retain logits, $y_r$ are labels, and $c_y$ are original retain centroids. Since comprehensive parameter updates risk instability under limited replay data, inspired by group sparse selection~\cite{zhao2024continual}, we apply localized regularization that selectively updates fewer transformer blocks:
+\begin{equation}
+\mathcal{L}_{\textit{local}} = \lambda_{\textit{local}} \sum_{g=1}^{G} \|\theta_g\|_2
+\end{equation}
+where $\theta_g$ represents parameters in block $g$ and $G$ is the total number of groups. Each $\theta_g$ is initialized at zero and tracks the \emph{change} accumulated in block $g$ relative to the pretrained weights, so $\mathcal{L}_{\textit{local}}$ penalizes the magnitude of updates rather than absolute parameter magnitude. This group-Lasso-inspired approach concentrates updates in specific blocks while leaving others unchanged, preserving retained knowledge under constrained replay. The total loss integrates all components:
+\begin{equation}
+\mathcal{L}_{\textit{total}} = \mathcal{L}_{\textit{f}} + \lambda_{\textit{dom}} \mathcal{L}_{\textit{dom}} + \mathcal{L}_{\textit{ret}} + \mathcal{L}_{\textit{local}}
+\end{equation}
+
+\subsection{Algorithmic Preview}
+Algorithm~\ref{alg:cu} summarizes the complete procedure: computing class centroids, assigning each forget class to its nearest retain centroid as a target, and iteratively updating the model using the combined forget, dominance, and retain losses.
+
+\begin{algorithm}[htbp]
+\caption{Camouflage Unlearning}
+\label{alg:cu}
+\begin{algorithmic}[1]
+\Require Pre-trained model $\mathcal{M}$, forget data $D_f$, retain data $D_r$, margin $\gamma$, hyperparameters $\lambda_{\text{dom}}, \lambda_{\text{ce}}, \lambda_{\text{emb}}, \lambda_{\text{local}}$, epochs $E$
+\Ensure Unlearned model $\mathcal{M}'$
+\For{each class $k$ in $D_r \cup D_f$}
+    \State $c_k \gets \tfrac{1}{|D_k|}\textstyle\sum_{x \in D_k} \operatorname{emb}(x)$
+\EndFor
+\For{each forget class $i$ with centroid $c_{f_i}$}
+    \State $j^* \gets \arg\min_j \|c_{f_i} - c_{r_j}\|_2$; \; $\mathbf{t}_i \gets c_{r_{j^*}}$ \Comment{Eq.~2}
+\EndFor
+\For{epoch $= 1$ to $E$}
+    \For{each mini-batch from $D_f, D_r$}
+        \State $\mathcal{L}_f \gets \tfrac{1}{|D_f|}\textstyle\sum_{(\mathbf{x},y) \in D_f} \|\operatorname{emb}(\mathbf{x}) - \mathbf{t}_y\|^2$ \Comment{Eq.~3}
+        \State $\mathcal{L}_{\text{dom}} \gets \operatorname{ReLU}\bigl(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\bigr)$ \Comment{Eq.~4}
+        \State $\mathcal{L}_{\text{ret}} \gets \lambda_{\text{ce}} \cdot \operatorname{CE}(\mathbf{z}_r, y_r)$
+        \Statex \hspace{3.2em} $+ \; \lambda_{\text{emb}} \cdot \tfrac{1}{|D_r|}\textstyle\sum_{(\mathbf{x},y) \in D_r} \|\operatorname{emb}(\mathbf{x}) - c_y\|^2$ \Comment{Eq.~5}
+        \State $\mathcal{L}_{\text{local}} \gets \lambda_{\text{local}} \textstyle\sum_{g=1}^{G} \|\theta_g \|_2$ \Comment{Eq.~6}
+        \State $\mathcal{L}_{\text{total}} \gets \mathcal{L}_f + \lambda_{\text{dom}} \mathcal{L}_{\text{dom}} + \mathcal{L}_{\text{ret}} + \mathcal{L}_{\text{local}}$ \Comment{Eq.~7}
+        \State Update $\mathcal{M}$ via $\nabla_\theta \mathcal{L}_{\text{total}}$
+    \EndFor
+\EndFor
+\State \Return $\mathcal{M}'$
+\end{algorithmic}
+\end{algorithm}

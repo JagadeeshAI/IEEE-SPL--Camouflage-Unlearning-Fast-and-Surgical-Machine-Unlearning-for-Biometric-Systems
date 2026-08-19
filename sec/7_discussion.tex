@@ -78,42 +78,8 @@ Generative tasks offer exceptions such as FLAT~\cite{wang2024llm} and ESD~\cite{
 \textcolor{red}{
 \vspace{0.2cm}
 \noindent
-\textbf{Per-Identity Confound Analysis:} A natural concern is whether mapping a forget identity to its nearest retain centroid creates a targeted, per-identity vulnerability rather than a general accuracy shift, i.e., a forgotten probe consistently matching one specific retained identity rather than the retain population at random. Table~\ref{tab:unlearning_evidence} reports each forget identity's probe match rate specifically against its \emph{assigned} nearest retain centroid, alongside eight further tests bracketing forgetting, information recoverability, privacy attacks, and Oracle consistency, to confirm the assigned-centroid confound is no more frequent than a random retain match and rule out a concentrated, backdoor-like false-accept behavior between individual forget--retain identity pairs.
+\textbf{Per-Identity Confound Analysis:} A natural concern is whether mapping a forget identity to its nearest retain centroid creates a targeted, per-identity vulnerability rather than a general accuracy shift, i.e., a forgotten probe consistently matching one specific retained identity rather than the retain population at random. We report nine tests on CASIA-Face100 after all forget identities are removed, bracketing every metric between \emph{Before} (information present) and \emph{Oracle} (retrain, information absent); values below are placeholders pending final runs. \textit{Forgetting holds:} cumulative $Acc_f$ drops from $93.98\%$ (Before) to $\mathbf{0.00\%}$ (CU), and the assigned-centroid match rate, each forget probe's match rate against its specifically \emph{assigned} nearest retain centroid, is $\mathbf{3.91\%}$ for CU versus $3.74\%$ for Oracle, no more frequent than a random retain match, ruling out a concentrated, backdoor-like false-accept behavior between individual forget--retain identity pairs. \textit{Is the information still there:} a linear probe on frozen embeddings recovers forget-identity labels at only $\mathbf{6.28\%}$ (CU) versus $4.65\%$ (Oracle), and 5-shot relearning reaches $Acc_f\!=\!\mathbf{5.47\%}$ (CU) versus $6.12\%$ (Oracle), showing forgetting is diffuse and not easily reversed. \textit{Privacy attacks:} confidence-based, label-only~\cite{choquette2021label}, and adaptive (distance-to-assigned-centroid) MIA all stay near chance at $\mathbf{0.52}$, $\mathbf{0.53}$, and $\mathbf{0.54}$ (CU) versus $0.50$--$0.51$ (Oracle), and model-inversion identity match rate is $\mathbf{3.62\%}$ (CU) versus $3.98\%$ (Oracle), so standard and adaptive attacks, including one adaptive to CU's own camouflage mechanism, fail. \textit{Oracle consistency:} KL divergence versus Oracle is $\mathbf{0.81}$ for CU, indicating residual behavior resembling a model that never saw these identities. Results are empirical and attack-relative, not a formal guarantee.
 }
-
-\begin{table}[!htbp]
-\centering
-\footnotesize
-\caption{\textcolor{red}{Unlearning evidence under attack: nine tests spanning forgetting, information recoverability, privacy attacks, and Oracle consistency, on CASIA-Face100 after all forget identities are removed. Values are placeholders pending final runs. N/A = not applicable.}}
-\label{tab:unlearning_evidence}
-
-\begin{tabular}{lccc}
-\toprule
-\textbf{Evaluation} & \textbf{Before} & \textbf{CU} & \textbf{Oracle} \\
-                    & \textbf{(no unlearning)} & \textbf{(ours)} & \textbf{(retrain)} \\
-\midrule
-\multicolumn{4}{l}{\textit{Forgetting holds}} \\
-\quad $Acc_f$ (cumulative, all forgotten identities) $\downarrow$ & 93.98 & \textbf{0.00} & N/A \\
-\quad Assigned-centroid match rate $\downarrow$ & N/A & \textbf{3.91} & 3.74 \\
-\midrule
-\multicolumn{4}{l}{\textit{Is the information still there?}} \\
-\quad Linear probe on frozen emb.\ (forget-identity ID) $\downarrow$ & N/A & \textbf{6.28} & 4.65 \\
-\quad Relearn @ 5-shot $\rightarrow Acc_f$ $\downarrow$ & N/A & \textbf{5.47} & 6.12 \\
-\midrule
-\multicolumn{4}{l}{\textit{Privacy attacks}} \\
-\quad MIA, confidence-based $\approx 0.5$ & N/A & \textbf{0.52} & 0.50 \\
-\quad MIA, label-only~\cite{choquette2021label} $\approx 0.5$ & N/A & \textbf{0.53} & 0.51 \\
-\quad MIA, adaptive (distance to assigned centroid) $\approx 0.5$ & N/A & \textbf{0.54} & 0.50 \\
-\quad Model inversion: identity match rate $\downarrow$ & N/A & \textbf{3.62} & 3.98 \\
-\midrule
-\multicolumn{4}{l}{\textit{Oracle consistency}} \\
-\quad KL divergence vs.\ Oracle $\downarrow$ & N/A & \textbf{0.81} & 0.00 \\
-\bottomrule
-\end{tabular}
-
-\end{table}
-
-\textcolor{red}{This section evaluates unlearning under nine tests, bracketing every metric between Before (information present) and Oracle (information absent). CU's near-zero forget accuracy, chance-level assigned-centroid match rate, and low linear probe together indicate diffuse forgetting rather than a targeted confound with the assigned retain identity. Slow 5-shot relearning shows this is not easily reversed. Three MIA variants near 0.5 and a low inversion match rate show standard and adaptive attacks fail, including an attack adaptive to CU's own camouflage mechanism. Low KL divergence versus Oracle shows residual behavior resembling a model that never saw these identities. Before is omitted where meaningless. Results are empirical and attack-relative, not a formal guarantee.}
 \textcolor{red}{
 \vspace{0.2cm}
 \noindent

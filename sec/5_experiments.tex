@@ -1,18 +1,6 @@
 \section{Performance Evaluation}
-\subsection{Experimental Setup}
 
-\noindent
-\textbf{Datasets, Backbones, and Baselines:} We evaluate on CIFAR-100~\cite{krizhevsky2009learning} (DeiT-Tiny~\cite{touvron2021training}), CASIA-Iris~\cite{singh2017gender} (LAM~\cite{luo2025novel}), Sokoto Coventry fingerprints~\cite{shehu2018sokoto} (JIPNet~\cite{guan2024joint}), and CASIA-Face100~\cite{yi2014learning} (Face Transformer~\cite{zhong2021face}), comparing CU against SCRUB~\cite{kurmanji2023towards}, SalUn~\cite{fan2023salun}, GS-LoRA~\cite{zhao2024continual}, LTU~\cite{huang2024learning}, MCU~\cite{shi2025mcu}, and Forget Vectors~\cite{sun2024forget}, plus an Oracle trained only on $D_r^{\textbf{full}}$ as the upper bound.
-
-\vspace{0.2cm}
-\noindent
-\textbf{Evaluation Metrics:} We report $Acc_f$, $Acc_r$, MIA (label-only attack~\cite{choquette2021label}, $\approx 0.5$ = safe), KL divergence to Oracle, RTE, and H-Mean~\cite{shibata2021learning}. Success requires $Acc_f \approx 0$, $Acc_r \approx$ Oracle, low KL/RTE. FAR@$\{0.3,0.4,0.5\}$/EER (cosine similarity, forget probes vs.\ retain gallery) further verify open-set identity confusion (Section~\ref{sec:attack}).
-
-\subsection{Main Results}
-\label{sec:main-results}
-Table~\ref{tab:all} compares all methods across four tasks; \colorbox{green!30}{green}/\colorbox{blue!30}{blue} mark best/second-best.
-
-\begin{table*}[!ht]
+\begin{table*}[!t]
 \centering
 \small
 \renewcommand{\arraystretch}{1.0}
@@ -63,6 +51,19 @@ LTU~\cite{huang2024learning}        & 0.00   & \colorbox{green!30}{ 87.72}   & \
 .}
 \label{tab:all}
 \end{table*}
+
+\subsection{Experimental Setup}
+
+\noindent
+\textbf{Datasets, Backbones, and Baselines:} We evaluate on CIFAR-100~\cite{krizhevsky2009learning} (DeiT-Tiny~\cite{touvron2021training}), CASIA-Iris~\cite{singh2017gender} (LAM~\cite{luo2025novel}), Sokoto Coventry fingerprints~\cite{shehu2018sokoto} (JIPNet~\cite{guan2024joint}), and CASIA-Face100~\cite{yi2014learning} (Face Transformer~\cite{zhong2021face}), comparing CU against SCRUB~\cite{kurmanji2023towards}, SalUn~\cite{fan2023salun}, GS-LoRA~\cite{zhao2024continual}, LTU~\cite{huang2024learning}, MCU~\cite{shi2025mcu}, and Forget Vectors~\cite{sun2024forget}, plus an Oracle trained only on $D_r^{\textbf{full}}$ as the upper bound.
+
+\vspace{0.2cm}
+\noindent
+\textbf{Evaluation Metrics:} We report $Acc_f$, $Acc_r$, MIA (label-only attack~\cite{choquette2021label}, $\approx 0.5$ = safe), KL divergence to Oracle, RTE, and H-Mean~\cite{shibata2021learning}. Success requires $Acc_f \approx 0$, $Acc_r \approx$ Oracle, low KL/RTE. FAR@$\{0.3,0.4,0.5\}$/EER (cosine similarity, forget probes vs.\ retain gallery) further verify open-set identity confusion (Section~\ref{sec:attack}).
+
+\subsection{Main Results}
+\label{sec:main-results}
+Table~\ref{tab:all} compares all methods across four tasks; \colorbox{green!30}{green}/\colorbox{blue!30}{blue} mark best/second-best.
 
 \vspace{0.2cm}
 \noindent

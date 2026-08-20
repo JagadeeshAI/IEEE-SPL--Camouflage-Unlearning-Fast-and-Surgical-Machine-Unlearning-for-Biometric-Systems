@@ -186,12 +186,12 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
 & $Acc_f$ & $Acc_r$ & $Acc_f \downarrow$ & $Acc_r \uparrow$ \\
 \midrule
-DeiT-Tiny   & 75.25 & 75.67 & \colorbox{blue!30}{0.40} & \colorbox{blue!30}{74.46} \\
+DeiT-Tiny   & 75.25 & 75.67 & 0.40 & 74.46 \\
 DeiT-Small  & 74.86 & 74.01 & 1.35 & 73.89 \\
 DeiT-Base   & 74.32 & 74.15 & 0.87 & 72.58 \\
 ViT-Base    & 72.58 & 73.21 & 2.35 & 70.35 \\
 \rowcolor{orange!10}
-ViT-Large   & 75.35 & 78.91 & \colorbox{green!30}{0.10} & \colorbox{green!30}{75.61} \\
+ViT-Large   & 75.35 & 78.91 & 0.10 & 75.61 \\
 \bottomrule
 \end{tabular}
 \vspace{0.02cm}
@@ -252,18 +252,18 @@ Aggregate FAR/EER cannot rule out a concentrated, backdoor-like confound between
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{l|c|c}
+\begin{tabular}{l|>{\columncolor{orange!10}}c|c}
 \toprule
 \textbf{Test} & \textbf{CU} & \textbf{Oracle} \\
 \midrule
-Assigned-centroid match $\downarrow$ & \colorbox{green!30}{2.71\%} & 3.54\% \\
+Assigned-centroid match $\downarrow$ & 2.71\% & 3.54\% \\
 \midrule
-Linear probe (frozen emb.) $\downarrow$ & 5.28\% & \colorbox{green!30}{4.85\%} \\
-5-shot relearn $Acc_f$ $\downarrow$ & \colorbox{green!30}{4.37\%} & 7.12\% \\
+Linear probe (frozen emb.) $\downarrow$ & 5.28\% & 4.85\% \\
+5-shot relearn $Acc_f$ $\downarrow$ & 4.37\% & 7.12\% \\
 \midrule
 MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & 0.52 & 0.51 \\
 MIA, adaptive $\approx\!0.5$ & 0.54 & 0.54 \\
-Model inversion match $\downarrow$ & \colorbox{green!30}{3.42\%} & 3.78\% \\
+Model inversion match $\downarrow$ & 3.42\% & 3.78\% \\
 \bottomrule
 \end{tabular}
 \vspace{0.03cm}
@@ -273,7 +273,7 @@ Model inversion match $\downarrow$ & \colorbox{green!30}{3.42\%} & 3.78\% \\
 
 \vspace{0.02cm}
 \noindent
-\textbf{Attention Maps:} Figure~\ref{fig:attention_maps} visualizes attention on forget/retain CASIA-Face100~\cite{yi2014learning} samples before/after CU: retrained and CU models shift attention off-face \textit{only for forget samples}, confirming surgical identity removal.
+\textbf{Attention Maps:} Figure~\ref{fig:attention_maps} shows retrained and CU models shift attention off-face \textit{only for forget} CASIA-Face100~\cite{yi2014learning} samples, confirming surgical identity removal.
 
 \begin{figure}[htbp]
     \centering

@@ -186,11 +186,12 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
 & $Acc_f$ & $Acc_r$ & $Acc_f \downarrow$ & $Acc_r \uparrow$ \\
 \midrule
-DeiT-Tiny   & 75.25 & 75.67 & 0.40& 74.46 \\
+DeiT-Tiny   & 75.25 & 75.67 & \colorbox{blue!30}{0.40} & \colorbox{blue!30}{74.46} \\
 DeiT-Small  & 74.86 & 74.01 & 1.35 & 73.89 \\
 DeiT-Base   & 74.32 & 74.15 & 0.87 & 72.58 \\
 ViT-Base    & 72.58 & 73.21 & 2.35 & 70.35 \\
-ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
+\rowcolor{orange!10}
+ViT-Large   & 75.35 & 78.91 & \colorbox{green!30}{0.10} & \colorbox{green!30}{75.61} \\
 \bottomrule
 \end{tabular}
 \vspace{0.02cm}
@@ -245,7 +246,7 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 
 \vspace{0.02cm}
 \noindent
-Aggregate FAR/EER cannot rule out a concentrated, backdoor-like confound between one forget identity and its assigned nearest-retain centroid, since such a pairing barely moves the aggregate rate. Table~\ref{tab:assigned_centroid} reports this per-identity measurement on CASIA-Face100 against the Oracle, covering assigned-centroid match, linear probe, relearning, MIA, and model inversion. CU's assigned-centroid match rate is no higher than Oracle's, ruling out concentrated confounding between individual forget--retain pairs. Its linear-probe rate stays within a point of Oracle, relearning is slow, and label-only/adaptive MIA plus inversion match sit near chance, showing forgetting is diffuse and adaptive attacks also fail.
+Aggregate FAR/EER cannot rule out a concentrated, backdoor-like confound between one forget identity and its assigned nearest-retain centroid, since such a pairing barely moves the aggregate rate. Table~\ref{tab:assigned_centroid} reports this per-identity measurement on CASIA-Face100 against the Oracle, with match rates in \% at the same cosine-similarity threshold as FAR@0.5 in Table~\ref{tab:far_eer}, covering assigned-centroid match, linear probe, relearning, MIA, and model inversion. CU's assigned-centroid match rate is no higher than Oracle's, ruling out concentrated confounding between individual forget--retain pairs. Its linear-probe rate stays within a point of Oracle, relearning is slow, and label-only/adaptive MIA plus inversion match sit near chance, showing forgetting is diffuse and adaptive attacks also fail.
 
 \begin{table}[htbp]
 \centering
@@ -255,18 +256,18 @@ Aggregate FAR/EER cannot rule out a concentrated, backdoor-like confound between
 \toprule
 \textbf{Test} & \textbf{CU} & \textbf{Oracle} \\
 \midrule
-Assigned-centroid match $\downarrow$ & \textbf{2.71\%} & 3.54\% \\
+Assigned-centroid match $\downarrow$ & \colorbox{green!30}{2.71\%} & 3.54\% \\
 \midrule
-Linear probe (frozen emb.) $\downarrow$ & \textbf{5.28\%} & 4.85\% \\
-5-shot relearn $Acc_f$ $\downarrow$ & \textbf{4.37\%} & 7.12\% \\
+Linear probe (frozen emb.) $\downarrow$ & 5.28\% & \colorbox{green!30}{4.85\%} \\
+5-shot relearn $Acc_f$ $\downarrow$ & \colorbox{green!30}{4.37\%} & 7.12\% \\
 \midrule
-MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & \textbf{0.52} & 0.51 \\
-MIA, adaptive $\approx\!0.5$ & \textbf{0.54} & 0.54 \\
-Model inversion match $\downarrow$ & \textbf{3.42\%} & 3.78\% \\
+MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & 0.52 & 0.51 \\
+MIA, adaptive $\approx\!0.5$ & 0.54 & 0.54 \\
+Model inversion match $\downarrow$ & \colorbox{green!30}{3.42\%} & 3.78\% \\
 \bottomrule
 \end{tabular}
 \vspace{0.03cm}
-\caption{Per-identity confound tests on CASIA-Face100, with match rates in \% at the same cosine-similarity threshold as FAR@0.5 in Table~\ref{tab:far_eer}, answering whether a forget probe matches its specifically assigned retain centroid more than chance.}
+\caption{Per-identity confound tests.}
 \label{tab:assigned_centroid}
 \end{table}
 

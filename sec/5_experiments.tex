@@ -229,7 +229,7 @@ Table~\ref{tab:far_eer} reports FAR/EER of forget probes vs.\ the retain gallery
 \small
 \setlength{\tabcolsep}{4pt}
 
-\begin{tabular}{lcccc}
+\begin{tabular}{l|c|c|c|c}
 \toprule
 Model & FAR@0.3 & FAR@0.4 & FAR@0.5 & EER \\
 \midrule
@@ -252,16 +252,18 @@ Aggregate FAR/EER cannot rule out a concentrated, backdoor-like confound between
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{l|>{\columncolor{orange!10}}c|c}
+\begin{tabular}{l|c|c}
 \toprule
 \textbf{Test} & \textbf{CU} & \textbf{Oracle} \\
 \midrule
 Assigned-centroid match $\downarrow$ & 2.71\% & 3.54\% \\
 \midrule
+\rowcolor{orange!10}
 Linear probe (frozen emb.) $\downarrow$ & 5.28\% & 4.85\% \\
 5-shot relearn $Acc_f$ $\downarrow$ & 4.37\% & 7.12\% \\
 \midrule
 MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & 0.52 & 0.51 \\
+\rowcolor{orange!10}
 MIA, adaptive $\approx\!0.5$ & 0.54 & 0.54 \\
 Model inversion match $\downarrow$ & 3.42\% & 3.78\% \\
 \bottomrule

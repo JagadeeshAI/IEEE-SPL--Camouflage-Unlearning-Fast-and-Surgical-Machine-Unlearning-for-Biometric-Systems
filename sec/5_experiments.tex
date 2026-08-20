@@ -187,16 +187,13 @@ ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
 \label{sec:attack}
 \vspace{0.2cm}
 \noindent
-\textcolor{red}{Table~\ref{tab:attack_verification}(a) reports FAR/EER of forget-class probes matched against the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), and both rise similarly over \textit{Before} unlearning ($1.64\%$), indicating that the small increase in open-set false accepts stems from removing the identities rather than from CU specifically.}
-
-\textcolor{red}{Whether these residual accepts concentrate on one specific retained identity, a targeted per-identity vulnerability rather than a general accuracy shift, is a separate question. Beyond the $Acc_f$, KL, and confidence-based MIA already reported in Table~\ref{tab:all}, Table~\ref{tab:attack_verification}(b) reports six further attack-based tests on CASIA-Face100 after all forget identities are removed, each referenced against the \emph{Oracle} (retrain, information absent); values are placeholders pending final runs. The assigned-centroid match rate, each forget probe's match rate against its specifically \emph{assigned} nearest retain centroid, is no more frequent for CU than for Oracle, ruling out a concentrated, backdoor-like false-accept behavior between individual forget--retain identity pairs. The low linear-probe and slow relearning rates show forgetting is diffuse and not easily reversed, while label-only and adaptive MIA near chance and a low inversion match rate show that stronger, adaptive attacks fail as well. Results are empirical and attack-relative, not a formal guarantee, and directly support the retain-buffer necessity argument of Section~\ref{8.1}.}
+\textcolor{red}{Table~\ref{tab:far_eer} reports FAR/EER of forget-class probes matched against the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), and both rise similarly over \textit{Before} unlearning ($1.64\%$), indicating that the small increase in open-set false accepts stems from removing the identities rather than from CU specifically.}
 
 \begin{table}[!ht]
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
 \textcolor{red}{
-\textbf{(a) FAR/EER on CASIA-Iris}\\[3pt]
 \begin{tabular}{lcccc}
 \toprule
 Model & FAR@0.3 & FAR@0.4 & FAR@0.5 & EER \\
@@ -206,25 +203,8 @@ Before & 11.38\% & 4.84\% & 1.64\% & 13.33\% \\
 CU & 17.97\% & 8.52\% & 3.83\% & 21.99\% \\
 Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \bottomrule
-\end{tabular}
-\vspace{0.3cm}
-\textbf{(b) Attack-based confound tests on CASIA-Face100}\\[3pt]
-\scriptsize
-\begin{tabular}{lcc}
-\toprule
-\textbf{Test} & \textbf{CU} & \textbf{Oracle} \\
-\midrule
-Assigned-centroid match $\downarrow$ & \textbf{3.91} & 3.74 \\
-\midrule
-Linear probe (frozen emb.) $\downarrow$ & \textbf{6.28} & 4.65 \\
-5-shot relearn $Acc_f$ $\downarrow$ & \textbf{5.47} & 6.12 \\
-\midrule
-MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & \textbf{0.53} & 0.51 \\
-MIA, adaptive $\approx\!0.5$ & \textbf{0.54} & 0.50 \\
-Model inversion match $\downarrow$ & \textbf{3.62} & 3.98 \\
-\bottomrule
 \end{tabular}}
 \vspace{0.15cm}
-\caption{\textcolor{red}{Attack-based verification. (a) FAR/EER of forget-class probes against the retain gallery on CASIA-Iris. (b) Six further attack-based tests on CASIA-Face100, complementing the $Acc_f$, KL, and MIA results of Table~\ref{tab:all}. Values in (b) are placeholders pending final runs.}}
-\label{tab:attack_verification}
+\caption{\textcolor{red}{FAR/EER of forget-class probes against the retain gallery on CASIA-Iris.}}
+\label{tab:far_eer}
 \end{table}

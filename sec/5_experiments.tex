@@ -59,7 +59,7 @@ LTU~\cite{huang2024learning}        & 0.00   & \colorbox{green!30}{ 87.72}   & \
 
 \vspace{0.02cm}
 \noindent
-\textbf{Evaluation Metrics:} We report $Acc_f$, $Acc_r$, MIA using the label-only attack~\cite{choquette2021label} where $\approx 0.5$ is safe, KL divergence to Oracle, RTE, and H-Mean~\cite{shibata2021learning}. Success requires $Acc_f \approx 0$, $Acc_r \approx$ Oracle, low KL/RTE. FAR@$\{0.3,0.4,0.5\}$/EER, computed via cosine similarity between forget probes and the retain gallery, further verify open-set identity confusion in Section~\ref{sec:attack}.
+\textbf{Evaluation Metrics:} We report $Acc_f$, $Acc_r$, MIA using the label-only attack~\cite{choquette2021label} where $\approx 0.5$ is safe, KL divergence to Oracle, RTE, and H-Mean~\cite{shibata2021learning}. Success requires $Acc_f \approx 0$, $Acc_r \approx$ Oracle, low KL/RTE. FAR@$\{0.3,0.4,0.5\}$/EER via cosine similarity further verify open-set identity confusion in Section~\ref{sec:attack}.
 
 \subsection{Main Results}
 \label{sec:main-results}
@@ -77,9 +77,9 @@ Figure~\ref{fig:tsne_comparison} visualizes embedding-space t-SNE. GS-LoRA~\cite
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.42\linewidth]{tsne/base.png}
+    \includegraphics[width=0.39\linewidth]{tsne/base.png}
     \hfill
-    \includegraphics[width=0.42\linewidth]{tsne/GA.png}
+    \includegraphics[width=0.39\linewidth]{tsne/GA.png}
 
     \vspace{0.15em}
     \makebox[0.45\linewidth]{\small (a) Initial}
@@ -87,9 +87,9 @@ Figure~\ref{fig:tsne_comparison} visualizes embedding-space t-SNE. GS-LoRA~\cite
     \makebox[0.45\linewidth]{\small (b) GS-LoRA}
     \vspace{1em}
 
-    \includegraphics[width=0.42\linewidth]{tsne/shadow.png}
+    \includegraphics[width=0.39\linewidth]{tsne/shadow.png}
     \hfill
-    \includegraphics[width=0.42\linewidth]{tsne/cl.png}
+    \includegraphics[width=0.39\linewidth]{tsne/cl.png}
 
     \vspace{0.15em}
     \makebox[0.45\linewidth]{\small (c) Boundary}
@@ -168,7 +168,7 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.72\linewidth]{images/GS.png}
+    \includegraphics[width=0.62\linewidth]{images/GS.png}
     \caption{Per-block $\ell_2$ norm, showing updates concentrate in few blocks.}
     \label{fig:local_effect}
 \end{figure}
@@ -279,7 +279,7 @@ Model inversion match $\downarrow$ & 3.42\% & 3.78\% \\
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.46\linewidth]{images/atten.png}
+    \includegraphics[width=0.40\linewidth]{images/atten.png}
     \caption{Attention maps showing retrained/CU models disperse attention off-face only for forget identities.}
     \label{fig:attention_maps}
 \end{figure}
@@ -290,7 +290,7 @@ Model inversion match $\downarrow$ & 3.42\% & 3.78\% \\
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.72\linewidth]{images/surface_level_unlearning.png}
+    \includegraphics[width=0.62\linewidth]{images/surface_level_unlearning.png}
     \caption{CU recovers gradually as genuine forgetting, while head-masking recovers rapidly as superficial forgetting.}
     \label{fig:surface_level_unlearning}
 \end{figure}

@@ -138,6 +138,50 @@ We ablate three design choices on CIFAR-100: the replay buffer ratio $|D_\textbf
     \label{fig:local_effect}
 \end{figure}
 
+\vspace{0.2cm}
+\noindent
+\textbf{Scalability:} We apply CU to five ViT backbones (DeiT-Tiny to ViT-Large). Table~\ref{tab:vit_scale} shows consistent forgetting and retention across both lightweight and large-scale architectures.
+
+\begin{table}[!ht]
+\centering
+\small
+\begin{tabular}{l|cc|cc}
+\toprule
+\multirow{2}{*}{Model} & \multicolumn{2}{c|}{Before Unlearning} & \multicolumn{2}{c}{After Unlearning} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+& $Acc_f$ & $Acc_r$ & $Acc_f \downarrow$ & $Acc_r \uparrow$ \\
+\midrule
+DeiT-Tiny   & 75.25 & 75.67 & 0.40& 74.46 \\
+DeiT-Small  & 74.86 & 74.01 & 1.35 & 73.89 \\
+DeiT-Base   & 74.32 & 74.15 & 0.87 & 72.58 \\
+ViT-Base    & 72.58 & 73.21 & 2.35 & 70.35 \\
+ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
+\bottomrule
+\end{tabular}
+\vspace{0.2cm}
+\caption{Effect of ViT backbone scale on unlearning performance.}
+\label{tab:vit_scale}
+\end{table}
+
+\vspace{0.2cm}
+\noindent
+\textbf{Sequential Removal Workload:} We pilot CU against DELETE~\cite{zhou2025decoupled}, LoTUS~\cite{spartalis2025lotus}, MUNBa~\cite{wu2025munba}, and LTU~\cite{huang2024learning} across successive forget cycles on CIFAR-100~\cite{krizhevsky2009learning} and CASIA-Face100~\cite{yi2014learning}. Figure~\ref{fig:pilot_study} shows baselines degrade progressively while CU retains stable accuracy, confirming robustness under continual removal.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.48\linewidth]{images/classification_results.png}
+    \hfill
+    \includegraphics[width=0.48\linewidth]{images/face_recognition_results.png}
+
+    \vspace{0.3em}
+    \makebox[0.48\linewidth]{\small (a) CIFAR-100}
+    \hfill
+    \makebox[0.48\linewidth]{\small (b) Face Recognition}
+    \vspace{0.1cm}
+    \caption{Retain accuracy across sequential unlearning cycles. Existing methods degrade progressively while CU maintains stable performance on both benchmarks.}
+    \label{fig:pilot_study}
+\end{figure}
+
 \subsection{Attack-Based Verification}
 \label{sec:attack}
 \vspace{0.2cm}

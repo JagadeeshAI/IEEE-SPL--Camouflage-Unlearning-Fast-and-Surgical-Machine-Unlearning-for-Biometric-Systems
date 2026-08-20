@@ -47,7 +47,7 @@ LTU~\cite{huang2024learning}        & 0.00   & \colorbox{green!30}{ 87.72}   & \
 \bottomrule
 \end{tabular}%
 }
-\caption{Performance across four recognition domains. CU achieves 3--4$\times$ RTE speedup with competitive forgetting, retention, and privacy.}
+\caption{Performance across four domains; CU achieves 3--4$\times$ RTE speedup.}
 \label{tab:all}
 \end{table*}
 
@@ -95,7 +95,7 @@ Figure~\ref{fig:tsne_comparison} visualizes embedding-space t-SNE. GS-LoRA~\cite
     \hfill
     \makebox[0.45\linewidth]{\small (d) CU (Ours)}
 
-    \caption{t-SNE embeddings: baselines collapse to one point; CU distributes to nearest boundaries.}
+    \caption{t-SNE: CU spreads embeddings; baselines collapse to one point.}
     \label{fig:tsne_comparison}
 \end{figure}
 
@@ -119,7 +119,7 @@ Buffer Ratio & Speed & $Acc_f$ & $Acc_r$ & $H\text{-}Mean$ \\
 \bottomrule
 \end{tabular}
 \vspace{0.2cm}
-\caption{Impact of replay buffer size. A 0.1 ratio balances retention and efficiency.}
+\caption{Replay buffer size ablation; 0.1 ratio balances retention/efficiency.}
 \label{tab:buffer_ratio}
 \end{table}
 
@@ -140,7 +140,7 @@ With Constraint & 0.39 & 77.06 \\
 \bottomrule
 \end{tabular}
 \vspace{0.2cm}
-\caption{Retain dominance constraint ablation: eliminates long-tail convergence.}
+\caption{Dominance constraint eliminates long-tail convergence.}
 \label{tab:dominance_ablation}
 \end{table}
 
@@ -161,14 +161,14 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 \bottomrule
 \end{tabular}
 \vspace{0.2cm}
-\caption{Localized regularization lowers total $\ell_2$ norm with minimal accuracy loss.}
+\caption{Localized regularization lowers $\ell_2$ norm; minimal accuracy loss.}
 \label{tab:local_effect}
 \end{table}
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=1\linewidth]{images/GS.png}
-    \caption{$\ell_2$ norm per block: updates concentrate in a few blocks.}
+    \caption{Per-block $\ell_2$ norm: updates concentrate in few blocks.}
     \label{fig:local_effect}
 \end{figure}
 
@@ -193,7 +193,7 @@ ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
 \bottomrule
 \end{tabular}
 \vspace{0.2cm}
-\caption{Effect of ViT backbone scale on unlearning.}
+\caption{ViT backbone scale vs.\ unlearning performance.}
 \label{tab:vit_scale}
 \end{table}
 
@@ -212,7 +212,7 @@ ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
     \hfill
     \makebox[0.48\linewidth]{\small (b) Face Recognition}
     \vspace{0.1cm}
-    \caption{Retain accuracy across sequential cycles: baselines degrade progressively, CU stays stable.}
+    \caption{Sequential-cycle retain accuracy; baselines degrade, CU stable.}
     \label{fig:pilot_study}
 \end{figure}
 
@@ -238,7 +238,7 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \bottomrule
 \end{tabular}}
 \vspace{0.15cm}
-\caption{\textcolor{red}{FAR/EER of forget probes against the retain gallery (CASIA-Iris).}}
+\caption{\textcolor{red}{FAR/EER of forget probes vs.\ retain gallery (CASIA-Iris).}}
 \label{tab:far_eer}
 \end{table}
 
@@ -249,7 +249,7 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.6\linewidth]{images/atten.png}
-    \caption{Attention maps on forget and retain samples (input, base, retrained, CU). \textcolor{red}{Retrained/CU models disperse attention off-face only for forget identities, confirming surgical removal.}}
+    \caption{\textcolor{red}{Attention maps: retrained/CU models disperse attention off-face only for forget identities.}}
     \label{fig:attention_maps}
 \end{figure}
 
@@ -260,6 +260,6 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.95\linewidth]{images/surface_level_unlearning.png}
-    \caption{CU recovers gradually (genuine forgetting) vs.\ rapid head-masking recovery (superficial).}
+    \caption{CU recovers gradually (genuine) vs.\ rapid head-masking (superficial).}
     \label{fig:surface_level_unlearning}
 \end{figure}

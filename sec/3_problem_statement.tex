@@ -9,7 +9,7 @@
 \label{sec:4}
 
 \subsection{Problem Setting}
-Let $\mathcal{M}$ be a model pre-trained on $D = D_\textit{r}^{\textit{full}} \cup D_\textit{f}$ ($D_\textit{r}^{\textit{full}} \cap D_\textit{f} = \emptyset$), mapping $f_\mathcal{M} : \mathcal{X}_D \rightarrow \mathcal{Y}_D$. Since storing $D_\textit{r}^{\textit{full}}$ is prohibited under GDPR/CCPA and full retraining is costly, we retain only a small replay buffer $D_\textit{r} \subset D_\textit{r}^{\textit{full}}$, at most 10\% of $|D_\textit{r}^{\textit{full}}|$\footnote{From this point, $D_\textit{r}$ denotes the replay buffer unless specified.}. Before unlearning, $\mathcal{M}$ correctly maps $D_\textit{f}$ and $D_\textit{r}$; applying $\mathcal{F}$ (Section~\ref{4.2}) yields $\mathcal{M}' = \mathcal{F}(\mathcal{M}, D_\textit{f}, D_\textit{r})$, under which the forget mapping should no longer hold while the retain mapping persists:
+Let $\mathcal{M}$ be a model pre-trained on $D = D_\textit{r}^{\textit{full}} \cup D_\textit{f}$ ($D_\textit{r}^{\textit{full}} \cap D_\textit{f} = \emptyset$), mapping $f_\mathcal{M} : \mathcal{X}_D \rightarrow \mathcal{Y}_D$. Since storing $D_\textit{r}^{\textit{full}}$ is prohibited under GDPR/CCPA and full retraining is costly, we retain only a small replay buffer $D_\textit{r} \subset D_\textit{r}^{\textit{full}}$, at most 10\% of $|D_\textit{r}^{\textit{full}}|$\footnote{From this point, $D_\textit{r}$ denotes the replay buffer unless specified.}. Before unlearning, $\mathcal{M}$ correctly maps $D_\textit{f}$ and $D_\textit{r}$. Applying $\mathcal{F}$, described in Section~\ref{4.2}, yields $\mathcal{M}' = \mathcal{F}(\mathcal{M}, D_\textit{f}, D_\textit{r})$, under which the forget mapping should no longer hold while the retain mapping persists, as shown below.
 {\small
 \begin{equation}
 f_{\mathcal{M}} :
@@ -45,7 +45,7 @@ This risks corrupting retain decision regions and prolonging convergence, so we 
 \begin{equation}
 \mathcal{L}_{\textit{dom}} = \textit{ReLU}\left(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\right)
 \end{equation}
-where $z_i$ are logits and $F, R$ index forget/retain classes; this accelerates forget suppression while preserving retain accuracy. Retain knowledge is further preserved via classification and embedding stability:
+where $z_i$ are logits and $F, R$ index forget/retain classes. This accelerates forget suppression while preserving retain accuracy. Retain knowledge is further preserved via classification and embedding stability:
 \begin{equation}
 \mathcal{L}_{\textit{ret}} = \lambda_{\textit{ce}} \cdot \textit{CE}(\mathbf{z}_r, y_r) + \lambda_{\textit{emb}} \cdot \frac{1}{|D_\textit{r}|}\sum_{(\mathbf{x}, y) \in D_\textit{r}} \|\textit{emb}(\mathbf{x}) - c_y\|^2
 \end{equation}

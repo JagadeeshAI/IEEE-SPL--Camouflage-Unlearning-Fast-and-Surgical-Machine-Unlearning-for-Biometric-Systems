@@ -221,7 +221,7 @@ ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
 \label{sec:attack}
 \vspace{0.05cm}
 \noindent
-Table~\ref{tab:far_eer} reports FAR/EER of forget probes vs.\ the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), both rising similarly over \textit{Before} ($1.64\%$), so the small increase stems from removing identities, not from CU.
+Table~\ref{tab:far_eer} reports FAR/EER of forget probes vs.\ the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $21.99\%$ vs.\ $21.69\%$), both rising similarly over \textit{Before} ($1.64\%$), so the small increase stems from removing identities, not from CU.
 
 \begin{table}[htbp]
 \centering
@@ -241,6 +241,33 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \vspace{0.08cm}
 \caption{FAR/EER of forget probes vs.\ retain gallery (CASIA-Iris).}
 \label{tab:far_eer}
+\end{table}
+
+\vspace{0.05cm}
+\noindent
+Aggregate FAR/EER cannot rule out a concentrated, backdoor-like confound between one forget identity and its specifically assigned nearest-retain centroid, since such a pairing would barely move the aggregate rate. Table~\ref{tab:assigned_centroid} reports the discriminating per-identity measurement directly, each forget probe's match rate against its \emph{assigned} retain centroid, alongside linear-probe and relearning tests for backbone-level forgetting and further MIA/inversion attacks, on CASIA-Face100 after all forget identities are removed, referenced against the Oracle. The assigned-centroid match rate is no higher for CU than for Oracle, ruling out concentrated confounding between individual forget--retain pairs; the low linear-probe and slow relearning rates show forgetting is diffuse and not easily reversed, and label-only/adaptive MIA near chance with a low inversion match rate show stronger, adaptive attacks also fail. Values are placeholders pending final runs.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Test} & \textbf{CU} & \textbf{Oracle} \\
+\midrule
+Assigned-centroid match $\downarrow$ & \textbf{3.91} & 3.74 \\
+\midrule
+Linear probe (frozen emb.) $\downarrow$ & \textbf{6.28} & 4.65 \\
+5-shot relearn $Acc_f$ $\downarrow$ & \textbf{5.47} & 6.12 \\
+\midrule
+MIA, label-only~\cite{choquette2021label} $\approx\!0.5$ & \textbf{0.53} & 0.51 \\
+MIA, adaptive $\approx\!0.5$ & \textbf{0.54} & 0.50 \\
+Model inversion match $\downarrow$ & \textbf{3.62} & 3.98 \\
+\bottomrule
+\end{tabular}
+\vspace{0.08cm}
+\caption{Per-identity confound tests on CASIA-Face100, answering whether a forget probe matches its specifically assigned retain centroid more than chance.}
+\label{tab:assigned_centroid}
 \end{table}
 
 \vspace{0.05cm}

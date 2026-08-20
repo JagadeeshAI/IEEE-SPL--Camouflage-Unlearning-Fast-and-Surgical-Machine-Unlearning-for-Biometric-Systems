@@ -221,13 +221,13 @@ ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
 \label{sec:attack}
 \vspace{0.05cm}
 \noindent
-\textcolor{red}{Table~\ref{tab:far_eer} reports FAR/EER of forget probes vs.\ the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), both rising similarly over \textit{Before} ($1.64\%$), so the small increase stems from removing identities, not from CU.}
+Table~\ref{tab:far_eer} reports FAR/EER of forget probes vs.\ the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), both rising similarly over \textit{Before} ($1.64\%$), so the small increase stems from removing identities, not from CU.
 
 \begin{table}[htbp]
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
-\textcolor{red}{
+
 \begin{tabular}{lcccc}
 \toprule
 Model & FAR@0.3 & FAR@0.4 & FAR@0.5 & EER \\
@@ -237,9 +237,9 @@ Before & 11.38\% & 4.84\% & 1.64\% & 13.33\% \\
 CU & 17.97\% & 8.52\% & 3.83\% & 21.99\% \\
 Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \vspace{0.08cm}
-\caption{\textcolor{red}{FAR/EER of forget probes vs.\ retain gallery (CASIA-Iris).}}
+\caption{FAR/EER of forget probes vs.\ retain gallery (CASIA-Iris).}
 \label{tab:far_eer}
 \end{table}
 
@@ -250,7 +250,7 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.52\linewidth]{images/atten.png}
-    \caption{\textcolor{red}{Attention maps: retrained/CU models disperse attention off-face only for forget identities.}}
+    \caption{Attention maps: retrained/CU models disperse attention off-face only for forget identities.}
     \label{fig:attention_maps}
 \end{figure}
 

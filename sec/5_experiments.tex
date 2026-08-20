@@ -103,33 +103,67 @@ Figure~\ref{fig:tsne_comparison} visualizes embedding-space t-SNE. GS-LoRA~\cite
 \subsection{Ablation Studies}
 \vspace{0.2cm}
 \noindent
-We ablate three design choices on CIFAR-100: the replay buffer ratio $|D_\textbf{r}|$, the retain dominance constraint, and localized regularization. Table~\ref{tab:ablation_all} shows a 0.1 buffer ratio optimally balances retention and efficiency; the dominance constraint reduces $Acc_f$ from 9.97\% to 0.39\% by eliminating the long-tail convergence issue; and localized regularization reduces total $\ell_2$ norm from 39.05 to 10.09 with minimal retention loss, with Figure~\ref{fig:local_effect} showing the updates concentrate in specific blocks.
+\textbf{Replay Buffer Size:} We investigate the minimal replay buffer size $|D_\textbf{r}|$ for effective unlearning on CIFAR-100. Table~\ref{tab:buffer_ratio} shows that a 0.1 ratio optimally balances retention accuracy and efficiency.
 
 \begin{table}[!ht]
 \centering
 \small
-\begin{tabular}{llccc}
+\begin{tabular}{lcccc}
 \toprule
-\textbf{Ablation} & \textbf{Setting} & $Acc_f{\downarrow}$ & $Acc_r{\uparrow}$ & \textbf{Extra} \\
+Buffer Ratio & Speed & $Acc_f$ & $Acc_r$ & $H\text{-}Mean$ \\
 \midrule
-\multirow{4}{*}{Buffer Ratio $|D_r|$}
- & 1.0 (1$\times$)   & 1.33 & 74.39 & $H$=2.62 \\
- & 0.5 (2$\times$)   & 1.18 & 73.00 & $H$=2.32 \\
- & 0.3 (3.3$\times$) & 1.33 & 74.55 & $H$=2.61 \\
- & \cellcolor{orange!10}0.1 (10$\times$) & \cellcolor{orange!10}1.30 & \cellcolor{orange!10}74.52 & \cellcolor{orange!10}$H$=2.56 \\
-\midrule
-\multirow{2}{*}{Dominance Constraint}
- & Without & 9.97 & 78.12 & -- \\
- & \cellcolor{orange!10}With & \cellcolor{orange!10}0.39 & \cellcolor{orange!10}77.06 & \cellcolor{orange!10}-- \\
-\midrule
-\multirow{2}{*}{Localized Reg.}
- & Without & 0.00 & 77.24 & $\ell_2$=39.05 \\
- & \cellcolor{orange!10}With & \cellcolor{orange!10}0.00 & \cellcolor{orange!10}74.76 & \cellcolor{orange!10}$\ell_2$=10.09 \\
+1.0 & 1$\times$ & 1.33 & 74.39 & 2.62 \\
+0.5 & 2$\times$ & 1.18 & 73.00 & 2.32 \\
+0.3 & 3.3$\times$ & 1.33 & 74.55 & 2.61 \\
+\rowcolor{orange!10}
+0.1 & 10$\times$ & 1.30 & 74.52 & 2.56 \\
 \bottomrule
 \end{tabular}
 \vspace{0.2cm}
-\caption{Design ablations: replay buffer ratio, retain dominance constraint, and localized regularization on CIFAR-100. Highlighted rows are CU's default setting.}
-\label{tab:ablation_all}
+\caption{Impact of replay buffer size on unlearning performance. A ratio of 0.1 optimally balances retention and efficiency.}
+\label{tab:buffer_ratio}
+\end{table}
+
+\vspace{0.2cm}
+\noindent
+\textbf{Retain Dominance Constraint:} Without this constraint, we found that the forget accuracy exhibits a prolonged tail, delaying convergence. Table~\ref{tab:dominance_ablation} demonstrates that applying the constraint reduces $Acc_f$ from 9.97\% to 0.39\%, achieving faster unlearning with minimal retention loss.
+
+\begin{table}[!ht]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+Method & $Acc_f$ & $Acc_r$ \\
+\midrule
+Without Constraint & 9.97 & 78.12  \\
+\rowcolor{orange!10}
+With Constraint & 0.39 & 77.06 \\
+\bottomrule
+\end{tabular}
+\vspace{0.2cm}
+\caption{Ablation on retain dominance constraint. The constraint accelerates unlearning by eliminating the long tail convergence issue.}
+\label{tab:dominance_ablation}
+\end{table}
+
+\vspace{0.2cm}
+\noindent
+\textbf{Localized Parameter Regularization:} This regularization selectively modifies fewer blocks, enabling surgical edits that preserve model capacity. On CIFAR-100 classification, Figure~\ref{fig:local_effect} shows concentrated updates in specific blocks, while Table~\ref{tab:local_effect} demonstrates reducing total $\ell_2$ norm from 39.05 to 10.09 with minimal retention loss.
+
+\begin{table}[!ht]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Method & $Acc_f$ & $Acc_r$ & Total $\ell_2$ Norm \\
+\midrule
+Without Localized Reg & 0.00 & 77.24 & 39.05 \\
+\rowcolor{orange!10}
+With Localized Reg & 0.00 & 74.76 & 10.09 \\
+\bottomrule
+\end{tabular}
+\vspace{0.2cm}
+\caption{Localized regularization reduces total $\ell_2$ norm while maintaining effective unlearning.}
+\label{tab:local_effect}
 \end{table}
 
 \begin{figure}[!ht]

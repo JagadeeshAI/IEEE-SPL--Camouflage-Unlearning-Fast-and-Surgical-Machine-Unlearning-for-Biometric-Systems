@@ -242,3 +242,25 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \caption{\textcolor{red}{FAR/EER of forget-class probes against the retain gallery on CASIA-Iris.}}
 \label{tab:far_eer}
 \end{table}
+
+\vspace{0.2cm}
+\noindent
+\textbf{Attention Maps:} We visualize attention on forget/retain CASIA-Face100~\cite{yi2014learning} samples before/after CU. Figure~\ref{fig:attention_maps} shows the base model attends to facial regions for both; retrained and CU models shift attention to peripheral areas \textit{only for forget samples}, confirming CU surgically removes identity-specific features while preserving retain ones.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.6\linewidth]{images/atten.png}
+    \caption{Attention maps on forget \textcolor{red}{and retain} samples. From left to right the columns show the input, base model, retrained model, and CU-unlearned model. Retrained and CU-unlearned models disperse attention away from facial regions only for forget identities, \textcolor{red}{while attention remains on facial cues for retain identities across all models}, indicating successful and surgical removal of identity-specific features.}
+    \label{fig:attention_maps}
+\end{figure}
+
+\vspace{0.2cm}
+\noindent
+\textbf{Relearning Attacks:} We test whether CU's forgetting is genuine or reversible via a relearning attack: fine-tuning a CU-unlearned model (50 classes) and a head-masked baseline on forgotten classes, tracking recovery. Figure~\ref{fig:surface_level_unlearning} shows CU recovers gradually versus head-masking's rapid recovery, confirming genuine backbone-level forgetting.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{images/surface_level_unlearning.png}
+    \caption{Backbone vs surface-level unlearning. CU recovers gradually (genuine forgetting) while head-masking recovers rapidly (superficial).}
+    \label{fig:surface_level_unlearning}
+\end{figure}

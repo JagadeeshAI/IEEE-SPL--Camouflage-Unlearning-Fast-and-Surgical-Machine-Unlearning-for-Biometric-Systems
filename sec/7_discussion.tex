@@ -1,26 +1,4 @@
 \section{Results Discussion}
-\vspace{0.2cm}
-\noindent
-\textbf{Attention Maps:} Accuracy metrics alone cannot reveal whether the model still relies on forgotten features internally, so we visualize attention maps on forget and \textcolor{red}{retain} samples from CASIA-Face100~\cite{yi2014learning} before and after Camouflage Unlearning. Dark red regions indicate pixels most influential to the decision. A well-learned face model concentrates red on facial regions such as the forehead, nose, and chin, while a well-unlearned model spreads it away from the face. As shown in Figure~\ref{fig:attention_maps}, the base model focuses on facial regions for both forget and retain samples, whereas the retrained and CU-unlearned models shift attention toward peripheral areas such as hair and background \textit{only for forget samples}, confirming that CU effectively removes identity-specific features and approaches the retrained oracle. \textcolor{red}{For retain samples, the base, retrained, and CU models all keep attention concentrated on facial regions, confirming CU is surgical: it suppresses identity cues only for removed classes while preserving discriminative attention for retained ones.}
-
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=0.6\linewidth]{images/atten.png}
-    \caption{Attention maps on forget \textcolor{red}{and retain} samples. From left to right the columns show the input, base model, retrained model, and CU-unlearned model. Retrained and CU-unlearned models disperse attention away from facial regions only for forget identities, \textcolor{red}{while attention remains on facial cues for retain identities across all models}, indicating successful and surgical removal of identity-specific features.}
-    \label{fig:attention_maps}
-\end{figure}
-
-
-\vspace{0.2cm}
-\noindent
-\textbf{Backbone Unlearning vs Surface-Level Unlearning:} A key question arises for Camouflage Unlearning. Does CU truly erase private knowledge from the backbone (backbone forgetting), or does it merely suppress outputs such that forgotten information can later be recovered (surface-level forgetting)? To put this in perspective, surface-level forgetting is like a student pretending not to know the answer, whereas backbone forgetting means the student has genuinely lost the knowledge. Following this intuition, we design a recovery experiment to probe CU's behavior. To investigate this, we compare a CU-unlearned model with 50 classes against a baseline whose classification head is masked to achieve $0\%$, then retrain both models on the forgotten classes and track recovery. As shown in Figure~\ref{fig:surface_level_unlearning}, CU recovers gradually, confirming genuine backbone unlearning.
-
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=0.95\linewidth]{images/surface_level_unlearning.png}
-    \caption{Backbone vs surface-level unlearning. CU recovers gradually (genuine forgetting) while head-masking recovers rapidly (superficial).}
-    \label{fig:surface_level_unlearning}
-\end{figure}
 
 \subsection{On the Necessity of the Retain Buffer}
 \label{8.1}

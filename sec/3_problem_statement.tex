@@ -9,7 +9,7 @@
 \label{sec:4}
 
 \subsection{Problem Setting}
-Let $\mathcal{M}$ be a model pre-trained on $D = D_\textit{r}^{\textit{full}} \cup D_\textit{f}$ ($D_\textit{r}^{\textit{full}} \cap D_\textit{f} = \emptyset$), representing a mapping $f_\mathcal{M} : \mathcal{X}_D \rightarrow \mathcal{Y}_D$. Storing $D_\textit{r}^{\textit{full}}$ is prohibited under GDPR/CCPA, and full retraining is costly, so we retain only a small replay buffer $D_\textit{r} \subset D_\textit{r}^{\textit{full}}$, with $|D_\textit{r}|$ limited to at most 10\% of $|D_\textit{r}^{\textit{full}}|$\footnote{From this point, $D_\textit{r}$ denotes the replay buffer unless specified.}. Before unlearning, $\mathcal{M}$ correctly maps both $D_\textit{f}$ and $D_\textit{r}$. Applying an unlearning algorithm $\mathcal{F}$ (Section~\ref{4.2}) yields $\mathcal{M}' = \mathcal{F}(\mathcal{M}, D_\textit{f}, D_\textit{r})$, under which the forget mapping should no longer hold while the retain mapping persists:
+Let $\mathcal{M}$ be a model pre-trained on $D = D_\textit{r}^{\textit{full}} \cup D_\textit{f}$ ($D_\textit{r}^{\textit{full}} \cap D_\textit{f} = \emptyset$), mapping $f_\mathcal{M} : \mathcal{X}_D \rightarrow \mathcal{Y}_D$. Since storing $D_\textit{r}^{\textit{full}}$ is prohibited under GDPR/CCPA and full retraining is costly, we retain only a small replay buffer $D_\textit{r} \subset D_\textit{r}^{\textit{full}}$, at most 10\% of $|D_\textit{r}^{\textit{full}}|$\footnote{From this point, $D_\textit{r}$ denotes the replay buffer unless specified.}. Before unlearning, $\mathcal{M}$ correctly maps $D_\textit{f}$ and $D_\textit{r}$; applying $\mathcal{F}$ (Section~\ref{4.2}) yields $\mathcal{M}' = \mathcal{F}(\mathcal{M}, D_\textit{f}, D_\textit{r})$, under which the forget mapping should no longer hold while the retain mapping persists:
 {\small
 \begin{equation}
 f_{\mathcal{M}} :
@@ -22,7 +22,7 @@ f_{\mathcal{M}'} :
 \label{eq:mapping}
 \end{equation}
 }
-where $\cancel{\rightarrow}$ denotes a forgotten mapping and $\rightarrow$ a retained one. We define successful unlearning as
+where $\cancel{\rightarrow}$/$\rightarrow$ denote forgotten/retained mappings. Successful unlearning requires:
 \begin{itemize}
     \item Forgetting: $\textit{Acc}(\mathcal{M}', D_\textit{f}) \leq \frac{1}{C}, $
     \item Retention: $\textit{Acc}(\mathcal{M}', D_\textit{r}) \approx \textit{Acc}(\textit{Oracle}, D_\textit{r})$
@@ -31,29 +31,29 @@ where $C$ is the number of classes and Oracle denotes a model trained directly o
 
 \subsection{Camouflage Unlearning}
 \label{4.2}
-CU relocates forget-class embeddings to retain-class boundaries via direct centroid mapping. Unlike existing many-to-one approaches that collapse all forget classes to a single distant point, CU implements many-to-many distribution, reducing migration distance and accelerating convergence.
+CU relocates forget-class embeddings to retain-class boundaries via direct centroid mapping, a many-to-many distribution replacing the many-to-one collapse of existing methods, reducing migration distance and accelerating convergence.
 
-We compute class centroids by averaging embeddings, $c_k = \frac{1}{|D_k|}\sum_{x \in D_k} \textit{emb}(x)$, yielding retain centroids $\{c_{r_1}, \dots, c_{r_K}\}$ and forget centroids $\{c_{f_1}, \dots, c_{f_M}\}$, where $K$ and $M$ are the numbers of retain and forget classes. Each forget centroid $c_{f_i}$ is assigned its nearest retain centroid as target:
+We compute class centroids by averaging embeddings, $c_k = \frac{1}{|D_k|}\sum_{x \in D_k} \textit{emb}(x)$, yielding retain centroids $\{c_{r_1}, \dots, c_{r_K}\}$ and forget centroids $\{c_{f_1}, \dots, c_{f_M}\}$. Each forget centroid is assigned its nearest retain centroid as target:
 \begin{equation}
 \mathbf{t}_i = c_{r_{j^*}}, \quad j^* = \arg\min_j \|c_{f_i} - c_{r_j}\|_2
 \end{equation}
-directly mapping forget embeddings into retain decision boundaries and minimizing migration distance. We pull forget embeddings toward their assigned targets:
+We pull forget embeddings toward their assigned targets:
 \begin{equation}
 \mathcal{L}_{\textit{f}} = \frac{1}{|D_\textit{f}|}\sum_{(\mathbf{x}, y) \in D_\textit{f}} \|\textit{emb}(\mathbf{x}) - \mathbf{t}_y\|^2
 \end{equation}
-which collapses forget classes into retain boundaries but risks corrupting retain decision regions and prolonging convergence. We therefore enforce that retain logits dominate forget logits by margin $\gamma = 2.0$:
+This risks corrupting retain decision regions and prolonging convergence, so we enforce that retain logits dominate forget logits by margin $\gamma = 2.0$:
 \begin{equation}
 \mathcal{L}_{\textit{dom}} = \textit{ReLU}\left(\max_{i \in F} z_i + \gamma - \max_{j \in R} z_j\right)
 \end{equation}
-where $z_i$ are logits and $F, R$ denote forget and retain class indices; this accelerates forget-class suppression while preserving retain accuracy. Retain-class knowledge is preserved through classification and embedding stability:
+where $z_i$ are logits and $F, R$ index forget/retain classes; this accelerates forget suppression while preserving retain accuracy. Retain knowledge is further preserved via classification and embedding stability:
 \begin{equation}
 \mathcal{L}_{\textit{ret}} = \lambda_{\textit{ce}} \cdot \textit{CE}(\mathbf{z}_r, y_r) + \lambda_{\textit{emb}} \cdot \frac{1}{|D_\textit{r}|}\sum_{(\mathbf{x}, y) \in D_\textit{r}} \|\textit{emb}(\mathbf{x}) - c_y\|^2
 \end{equation}
-where $\mathbf{z}_r$ are retain logits, $y_r$ are labels, and $c_y$ are original retain centroids. Since comprehensive parameter updates risk instability under limited replay data, inspired by group sparse selection~\cite{zhao2024continual}, we apply localized regularization that selectively updates fewer transformer blocks:
+where $\mathbf{z}_r$, $y_r$, and $c_y$ are retain logits, labels, and original centroids. Since full-parameter updates risk instability under limited replay, inspired by group sparse selection~\cite{zhao2024continual}, we apply localized regularization over fewer transformer blocks:
 \begin{equation}
 \mathcal{L}_{\textit{local}} = \lambda_{\textit{local}} \sum_{g=1}^{G} \|\theta_g\|_2
 \end{equation}
-where $\theta_g$ represents parameters in block $g$ and $G$ is the total number of groups. Each $\theta_g$ is initialized at zero and tracks the \emph{change} accumulated in block $g$ relative to the pretrained weights, so $\mathcal{L}_{\textit{local}}$ penalizes the magnitude of updates rather than absolute parameter magnitude. This group-Lasso-inspired approach concentrates updates in specific blocks while leaving others unchanged, preserving retained knowledge under constrained replay. The total loss integrates all components:
+where $\theta_g$ are block-$g$ parameters and $G$ is the number of groups, each initialized at zero to track the \emph{change} from pretrained weights, so $\mathcal{L}_{\textit{local}}$ penalizes update magnitude rather than absolute weights. This group-Lasso approach concentrates updates in few blocks, preserving retained knowledge under constrained replay. The total loss:
 \begin{equation}
 \mathcal{L}_{\textit{total}} = \mathcal{L}_{\textit{f}} + \lambda_{\textit{dom}} \mathcal{L}_{\textit{dom}} + \mathcal{L}_{\textit{ret}} + \mathcal{L}_{\textit{local}}
 \end{equation}

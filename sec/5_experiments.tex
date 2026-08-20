@@ -10,7 +10,7 @@
 
 \subsection{Main Results}
 \label{sec:main-results}
-Table~\ref{tab:all} presents results across four tasks: classification, iris recognition, fingerprint recognition, and face recognition, where \colorbox{green!30}{green} highlights best performance and \colorbox{blue!30}{blue} indicates second-best.
+Table~\ref{tab:all} compares all methods across four tasks; \colorbox{green!30}{green}/\colorbox{blue!30}{blue} mark best/second-best.
 
 \begin{table*}[!ht]
 \centering
@@ -66,17 +66,13 @@ LTU~\cite{huang2024learning}        & 0.00   & \colorbox{green!30}{ 87.72}   & \
 
 \vspace{0.2cm}
 \noindent
-\textbf{Unlearning and Retention:} All methods achieve near perfect forgetting $Acc_f < 1\%$, approaching random assignment. Proposed CU consistently ranks first or second in $Acc_r$ across all tasks, with LTU as the strongest competitor on classification, iris, and fingerprint tasks, while MCU excels on iris recognition. For \textit{H-Mean}, proposed CU alternates between first and second positions alongside competitive showings from LTU, FV, MCU, and GS-LoRA.
+\textbf{Results:} All methods forget near-perfectly ($Acc_f < 1\%$). CU ranks first or second in $Acc_r$ and H-Mean across all tasks (LTU and MCU the closest competitors), and achieves MIA $\approx 0.5$ despite GS-LoRA's lower KL, expected since CU deliberately reshapes forget logits. Most critically, CU delivers a 3--4$\times$ RTE speedup over every baseline.
 
 \vspace{0.2cm}
 \noindent
-\textbf{Privacy and Efficiency:} GS-LoRA achieves lower KL divergence than CU, which is expected since CU deliberately modifies logit distributions to suppress forget classes and is therefore less competitive on this metric. However, MIA scores near 0.5 confirm CU provides comparable privacy protection. Most critically, proposed CU achieves 3 to 4$\bm{\times}$ speedup versus all baselines, validating our design objective: fast, privacy-preserving unlearning without catastrophic forgetting.
-
-\vspace{0.2cm}
-\noindent
-\textbf{Geometric Analysis of Unlearning Behavior:}
+\textbf{Geometric Analysis:}
 \label{sec:tsne}
-To understand geometric behavior across unlearning methods, we visualize embedding space transformations using t-SNE. Figure~\ref{fig:tsne_comparison} compares baseline methods against proposed CU. Existing approaches GS-LoRA~\cite{zhao2024continual}, SCRUB~\cite{kurmanji2023towards}, and Boundary Unlearning~\cite{chen2023boundary} collapse forget classes into a single distant point, requiring long distance traversal in feature space. CU distributes forget samples across nearest retain class boundaries, achieving faster convergence through shorter migration paths, explaining the RTE gains in Table~\ref{tab:all}.
+Figure~\ref{fig:tsne_comparison} visualizes embedding-space t-SNE. GS-LoRA~\cite{zhao2024continual}, SCRUB~\cite{kurmanji2023towards}, and Boundary Unlearning~\cite{chen2023boundary} collapse forget classes to one distant point; CU instead migrates them to the nearest retain boundary, explaining its RTE gains in Table~\ref{tab:all}.
 
 \begin{figure}[!ht]
     \centering

@@ -1,5 +1,5 @@
 \section{Introduction}
-\IEEEPARstart{M}{achine} unlearning (MU) has emerged as a critical research area, addressing the imperative to prevent unauthorized data exploitation, eliminate harmful model behaviors, and safeguard user privacy~\cite{zhu2024privauditor}. A natural consideration follows: what drives the necessity for unlearning? The proliferation of AI misuse ranging from phishing generation and model inversion attacks to perpetuating misinformation has prompted regulatory frameworks~\cite{li2024model,prabhakar2025model,kahla2022label}. Frameworks like the General Data Protection Regulation (GDPR) and California Consumer Privacy Act (CCPA)~\cite{goldman2020introduction,data2018general} mandate data erasure capabilities. These regulations require model service providers to erase user data from learned representations upon request. This establishes both legal and ethical obligations for responsible AI deployment. Crucially, users possess the right to request data removal at any time. This transforms unlearning from a one time operation into a continuous process throughout a model's deployment lifecycle. Per-request efficiency, therefore, becomes a first-class concern.
+\IEEEPARstart{M}{achine} unlearning (MU) has emerged as a critical research area, addressing the imperative to prevent unauthorized data exploitation, eliminate harmful model behaviors, and safeguard user privacy~\cite{zhu2024privauditor}. The proliferation of AI misuse ranging from phishing generation and model inversion attacks to perpetuating misinformation has prompted regulatory frameworks~\cite{li2024model,prabhakar2025model,kahla2022label}. Frameworks like the General Data Protection Regulation (GDPR) and California Consumer Privacy Act (CCPA)~\cite{goldman2020introduction,data2018general} mandate that model service providers erase user data from learned representations upon request, establishing legal and ethical obligations for responsible AI deployment. Users possess the right to request data removal at any time, so per-request efficiency becomes a first-class concern.
 
 % \begin{figure}
 %     \centering
@@ -26,7 +26,7 @@ To address these challenges, we propose Camouflage Unlearning (CU), a novel fram
 
 Our main contributions are summarized as follows:
 \begin{enumerate}
-    \item To the best of our knowledge, this is the among the earliest comprehensive studies of machine unlearning for privacy-critical biometric systems, including fingerprint, iris, and face recognition.
+    \item To the best of our knowledge, this is among the earliest studies of machine unlearning for privacy-critical biometric systems, including fingerprint, iris, and face recognition.
     \item We introduce Camouflage Unlearning, which achieves $3$--$4\times$ faster convergence compared to SoTA unlearning methods while maintaining competitive retention accuracy and privacy guarantees.
     \item We conduct extensive empirical evaluation across multiple biometric and classification domains, demonstrating that CU concentrates updates in specific network blocks and remains effective under data-scarce replay conditions.
 \end{enumerate}

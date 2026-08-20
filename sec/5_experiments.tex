@@ -74,7 +74,7 @@ Table~\ref{tab:all} compares all methods across four tasks; \colorbox{green!30}{
 \label{sec:tsne}
 Figure~\ref{fig:tsne_comparison} visualizes embedding-space t-SNE. GS-LoRA~\cite{zhao2024continual}, SCRUB~\cite{kurmanji2023towards}, and Boundary Unlearning~\cite{chen2023boundary} collapse forget classes to one distant point; CU instead migrates them to the nearest retain boundary, explaining its RTE gains in Table~\ref{tab:all}.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.45\linewidth]{tsne/base.png}
     \hfill
@@ -104,7 +104,7 @@ Figure~\ref{fig:tsne_comparison} visualizes embedding-space t-SNE. GS-LoRA~\cite
 \noindent
 \textbf{Replay Buffer Size:} We investigate the minimal replay buffer size $|D_\textbf{r}|$ for effective unlearning on CIFAR-100. Table~\ref{tab:buffer_ratio} shows that a 0.1 ratio optimally balances retention accuracy and efficiency.
 
-\begin{table}[!ht]
+\begin{table}[H]
 \centering
 \small
 \begin{tabular}{lcccc}
@@ -127,7 +127,7 @@ Buffer Ratio & Speed & $Acc_f$ & $Acc_r$ & $H\text{-}Mean$ \\
 \noindent
 \textbf{Retain Dominance Constraint:} Without this constraint, we found that the forget accuracy exhibits a prolonged tail, delaying convergence. Table~\ref{tab:dominance_ablation} demonstrates that applying the constraint reduces $Acc_f$ from 9.97\% to 0.39\%, achieving faster unlearning with minimal retention loss.
 
-\begin{table}[!ht]
+\begin{table}[H]
 \centering
 \small
 \begin{tabular}{lcc}
@@ -148,7 +148,7 @@ With Constraint & 0.39 & 77.06 \\
 \noindent
 \textbf{Localized Parameter Regularization:} This regularization selectively modifies fewer blocks, enabling surgical edits that preserve model capacity. On CIFAR-100 classification, Figure~\ref{fig:local_effect} shows concentrated updates in specific blocks, while Table~\ref{tab:local_effect} demonstrates reducing total $\ell_2$ norm from 39.05 to 10.09 with minimal retention loss.
 
-\begin{table}[!ht]
+\begin{table}[H]
 \centering
 \small
 \begin{tabular}{lccc}
@@ -165,7 +165,7 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 \label{tab:local_effect}
 \end{table}
 
-\begin{figure}[!ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{images/GS.png}
     \caption{Per-block $\ell_2$ norm: updates concentrate in few blocks.}
@@ -176,7 +176,7 @@ With Localized Reg & 0.00 & 74.76 & 10.09 \\
 \noindent
 \textbf{Scalability:} We apply CU to five ViT backbones (DeiT-Tiny to ViT-Large). Table~\ref{tab:vit_scale} shows consistent forgetting and retention across both lightweight and large-scale architectures.
 
-\begin{table}[!ht]
+\begin{table}[H]
 \centering
 \small
 \begin{tabular}{l|cc|cc}
@@ -201,7 +201,7 @@ ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
 \noindent
 \textbf{Sequential Removal Workload:} We pilot CU against DELETE~\cite{zhou2025decoupled}, LoTUS~\cite{spartalis2025lotus}, MUNBa~\cite{wu2025munba}, and LTU~\cite{huang2024learning} across successive forget cycles on CIFAR-100~\cite{krizhevsky2009learning} and CASIA-Face100~\cite{yi2014learning}. Figure~\ref{fig:pilot_study} shows baselines degrade progressively while CU retains stable accuracy, confirming robustness under continual removal.
 
-\begin{figure}[!h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.48\linewidth]{images/classification_results.png}
     \hfill
@@ -222,7 +222,7 @@ ViT-Large   & 75.35 & 78.91 &  0.10 & 75.61 \\
 \noindent
 \textcolor{red}{Table~\ref{tab:far_eer} reports FAR/EER of forget-class probes matched against the retain gallery on CASIA-Iris. CU tracks the Oracle closely (FAR@0.5 $3.83\%$ vs.\ $3.10\%$; EER $24.99\%$ vs.\ $21.69\%$), and both rise similarly over \textit{Before} unlearning ($1.64\%$), indicating that the small increase in open-set false accepts stems from removing the identities rather than from CU specifically.}
 
-\begin{table}[!ht]
+\begin{table}[H]
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
@@ -246,7 +246,7 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \noindent
 \textbf{Attention Maps:} We visualize attention on forget/retain CASIA-Face100~\cite{yi2014learning} samples before/after CU. Figure~\ref{fig:attention_maps} shows the base model attends to facial regions for both; retrained and CU models shift attention to peripheral areas \textit{only for forget samples}, confirming CU surgically removes identity-specific features while preserving retain ones.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{images/atten.png}
     \caption{\textcolor{red}{Attention maps: retrained/CU models disperse attention off-face only for forget identities.}}
@@ -257,7 +257,7 @@ Oracle & 16.10\% & 7.79\% & 3.10\% & 21.69\% \\
 \noindent
 \textbf{Relearning Attacks:} We test whether CU's forgetting is genuine or reversible via a relearning attack: fine-tuning a CU-unlearned model (50 classes) and a head-masked baseline on forgotten classes, tracking recovery. Figure~\ref{fig:surface_level_unlearning} shows CU recovers gradually versus head-masking's rapid recovery, confirming genuine backbone-level forgetting.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\linewidth]{images/surface_level_unlearning.png}
     \caption{CU recovers gradually (genuine) vs.\ rapid head-masking (superficial).}
